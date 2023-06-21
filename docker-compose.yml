@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  api_gateway_api:
+    build: ./API-Gateway
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    container_name: api-gateway-api
+    depends_on:
+      - rabbitmq
+      - embedding_service_api
+      - file_service_api
+
+  embedding_service_api:
+    build: ./Embedding-Service
+    command: python app/main.py
+    container_name: embedding-service-api
+    depends_on:
+      - rabbitmq
+
+  file_service_api:
+    build: ./File-Service
+    command: python app/main.py
+    container_name: file-service-api
+    depends_on:
+      - rabbitmq
+      - file_service_minio
+      - file_service_postgres
+
+  file_service_grobid:
+    image: lfoppiano/grobid:0.7.2
+    ports:
+      - "8070:8070"
+    container_name: file-service-grobid
+
+  file_service_minio:
+    image: minio/minio
+    command: server --console-address ":9001" --address ":9000" /data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - file_service_minio_data:/data
+    container_name: file-service-minio
+
+  file_service_postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - file_service_postgres_data:/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=file_service
+    container_name: file-service-postgres
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+    container_name: rabbitmq
+
+
+volumes:
+  file_service_minio_data:
+  file_service_postgres_data:
+
+
