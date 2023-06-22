@@ -1,6 +1,7 @@
-from app.schemas.cross_encode import CrossEncodeRequest, CrossEncodeResponse
-from app.modules.cross_encoding import rerank
 from pydantic import ValidationError
+
+from app.modules.cross_encode_module import rerank
+from app.schemas.cross_encode_schema import CrossEncodeRequest, CrossEncodeResponse
 
 
 def handle_cross_encode(raw_payload: dict):

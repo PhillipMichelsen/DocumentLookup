@@ -1,6 +1,7 @@
 import json
-from app.handlers.embed import handle_embed
-from app.utils.pika_handler import pika_handler
+
+from app.handlers.embed_handler import handle_embed
+from app.utils.pika_helper import pika_handler
 
 
 def on_message_embed(ch, method, properties, body):

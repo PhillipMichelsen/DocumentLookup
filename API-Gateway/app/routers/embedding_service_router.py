@@ -3,13 +3,13 @@ import json
 from fastapi import APIRouter
 
 from app.config import exchanges_routing
-from app.schemas.embedding_service import EmbedRequest, EmbedResponse, CrossEncodeRequest, CrossEncodeResponse
-from app.utils.pika_handler_gateway import pika_handler
+from app.schemas.embedding_service_schema import EmbedRequest, EmbedResponse, CrossEncodeRequest, CrossEncodeResponse
+from app.utils.pika_helper_gateway import pika_handler
 
 router = APIRouter()
 
 
-@router.post("/embed",
+@router.post(path="/embed",
              name="Sentence Embedding",
              description="Generate embeddings for sentences",
              response_model=EmbedResponse
@@ -31,7 +31,7 @@ async def route_embedding(request: EmbedRequest):
     return EmbedResponse(**response)
 
 
-@router.post("/rerank",
+@router.post(path="/rerank",
              name="Rerank embeddings",
              description="Reranking embeddings based on query",
              response_model=CrossEncodeResponse

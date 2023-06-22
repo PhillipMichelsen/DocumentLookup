@@ -1,6 +1,8 @@
-from app.config import settings
 from typing import List, Tuple
+
 from sentence_transformers import CrossEncoder
+
+from app.config import settings
 
 cross_embedding_model = CrossEncoder(settings.cross_embedding_model)
 

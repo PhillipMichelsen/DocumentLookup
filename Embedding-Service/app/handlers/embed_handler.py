@@ -1,6 +1,7 @@
-from app.schemas.embed import EmbedRequest, EmbedResponse
-from app.modules.embedding import generate_embedding
 from pydantic import ValidationError
+
+from app.modules.embed_module import generate_embedding
+from app.schemas.embed_schema import EmbedRequest, EmbedResponse
 
 
 def handle_embed(raw_payload: dict):

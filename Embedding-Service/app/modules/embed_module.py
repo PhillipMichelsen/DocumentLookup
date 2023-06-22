@@ -1,6 +1,8 @@
-from app.config import settings
 from typing import List
+
 from sentence_transformers import SentenceTransformer
+
+from app.config import settings
 
 embedding_model = SentenceTransformer(settings.embedding_model_sentences, cache_folder=settings.cache_folder)
 

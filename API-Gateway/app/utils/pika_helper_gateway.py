@@ -21,7 +21,8 @@ class PikaHandler:
             password=settings.rabbitmq_password
         )
         self.channel = await self.connection.channel()
-        self.response_exchange = await self.channel.declare_exchange(exchanges_routing.response_exchange, aio_pika.ExchangeType.DIRECT)
+        self.response_exchange = await self.channel.declare_exchange(exchanges_routing.response_exchange,
+                                                                     aio_pika.ExchangeType.DIRECT)
 
         asyncio.create_task(self.listen_for_responses())
 

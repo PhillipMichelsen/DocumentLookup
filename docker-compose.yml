@@ -9,8 +9,6 @@ services:
     container_name: api-gateway-api
     depends_on:
       - rabbitmq
-      - embedding_service_api
-      - file_service_api
 
   embedding_service_api:
     build: ./Embedding-Service

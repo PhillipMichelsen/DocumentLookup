@@ -1,6 +1,7 @@
 import json
-from app.handlers.cross_encode import handle_cross_encode
-from app.utils.pika_handler import pika_handler
+
+from app.handlers.cross_encode_handler import handle_cross_encode
+from app.utils.pika_helper import pika_handler
 
 
 def on_message_rerank(ch, method, properties, body):

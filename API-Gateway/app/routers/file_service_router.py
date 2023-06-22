@@ -3,13 +3,13 @@ import json
 from fastapi import APIRouter
 
 from app.config import exchanges_routing
-from app.schemas.file_service import GetPresignedURLRequest, GetPresignedURLResponse
-from app.utils.pika_handler_gateway import pika_handler
+from app.schemas.file_service_schema import GetPresignedURLRequest, GetPresignedURLResponse
+from app.utils.pika_helper_gateway import pika_handler
 
 router = APIRouter()
 
 
-@router.post("/get-presigned-url",
+@router.post(path="/get-presigned-url",
              name="Get presigned url",
              description="Get presigned url for uploading file",
              response_model=GetPresignedURLResponse
@@ -29,3 +29,4 @@ async def route_get_presigned(request: GetPresignedURLRequest):
     response = json.loads(response)
 
     return GetPresignedURLResponse(**response)
+

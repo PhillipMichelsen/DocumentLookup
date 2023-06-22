@@ -1,5 +1,5 @@
 import pika
-import json
+
 from app.config import settings
 
 
@@ -17,7 +17,7 @@ class PikaHandler:
         self.channel = self.connection.channel()
         self.exchange_name = 'embedding_exchange'
         self.channel.exchange_declare(exchange=self.exchange_name, exchange_type='direct')
-        print(f"Connected to RabbitMQ, host: {settings.rabbitmq_host}")
+        print(f"Connected to RabbitMQ, host: {settings.rabbitmq_host}", flush=True)
 
     def register_consumer(self, queue_name, routing_key, on_message_callback):
         self.channel.queue_declare(queue=queue_name)
@@ -34,7 +34,7 @@ class PikaHandler:
         self.channel.basic_ack(delivery_tag=delivery_tag)
 
     def start_consuming(self):
-        print("Waiting for messages. To exit press CTRL+C")
+        print("Waiting for messages...", flush=True)
         self.channel.start_consuming()
 
 
