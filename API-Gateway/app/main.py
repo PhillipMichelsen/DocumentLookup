@@ -8,8 +8,8 @@ from app.utils.pika_helper_gateway import pika_handler
 app = FastAPI()
 
 # Add routers
-app.include_router(embedding_service.router, prefix="/embedding", tags=["embedding"])
-app.include_router(file_service.router, prefix="/files", tags=["files"])
+app.include_router(embedding_service_router.router, prefix="/embedding", tags=["embedding"])
+app.include_router(file_service_router.router, prefix="/files", tags=["files"])
 
 # Add middleware
 app.add_middleware(
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 
+# Startup event
 @app.on_event("startup")
 async def startup():
     print("Starting!!!")
@@ -28,6 +29,7 @@ async def startup():
     await pika_handler.init_connection()
 
 
+# Root route
 @app.get("/")
 def root():
     return {"message": "Working!!"}

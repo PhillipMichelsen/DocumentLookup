@@ -3,7 +3,8 @@ import json
 from fastapi import APIRouter
 
 from app.config import exchanges_routing
-from app.schemas.embedding_service_schema import EmbedRequest, EmbedResponse, CrossEncodeRequest, CrossEncodeResponse
+from app.schemas.embedding_service_schema import EmbedRequest, EmbedResponse, \
+    CrossEncodeRequest, CrossEncodeResponse
 from app.utils.pika_helper_gateway import pika_handler
 
 router = APIRouter()
