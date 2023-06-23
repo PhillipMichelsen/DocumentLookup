@@ -5,6 +5,10 @@ from app.utils.pika_helper import pika_handler
 
 
 def on_message_rerank(ch, method, properties, body):
+    """Rerank listener
+
+    Decodes payload and sends to the cross-encode handler. Response from handler is encoded and sent to response queue.
+    """
     data = json.loads(body.decode('utf-8'))
 
     response = handle_cross_encode(data)

@@ -1,2 +1,2 @@
-aio_pika
-fastapi[all]
+aio_pika==9.1.3
+fastapi[all]==0.98.0
