@@ -1,4 +1,4 @@
 .idea
 .env
 venv
-sentence_models
+embedding_models

@@ -18,7 +18,7 @@ class PikaHandler:
         self.exchange_name = settings.embedding_exchange
         self.channel.exchange_declare(exchange=self.exchange_name, exchange_type='direct')
         self.debug = settings.debug
-        print(f"Connected to RabbitMQ, host: {settings.rabbitmq_host}", flush=True)
+        print(f"Connected to RabbitMQ as {self.exchange_name}, host: {settings.rabbitmq_host}", flush=True)
 
     def register_consumer(self, queue_name, routing_key, on_message_callback):
         """Registers a consumer for a queue and routing key.

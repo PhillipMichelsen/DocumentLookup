@@ -6,6 +6,8 @@ COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app /src/app
-#COPY ./sentence_models /src/sentence_models
+
+# Uncomment if embedding_models downloaded on local machine
+COPY ./embedding_models /src/embedding_models
 
 ENV PYTHONPATH /src
