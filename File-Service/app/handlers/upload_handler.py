@@ -1,6 +1,6 @@
 from pydantic import ValidationError
 
-from app.utils.pika_handler import pika_handler
+from app.utils.pika_helper import pika_helper
 from app.modules.upload_module import get_upload_presigned_url, get_download_presigned_url
 from app.schemas.upload_schemas import \
     GetPresignedURLUploadRequest, GetPresignedURLUploadResponse, \

@@ -15,6 +15,7 @@ def grobid_fulltext_pdf(presigned_url_download: str) -> bytes:
     return response.content
 
 
+# TODO: Implement process_header_pdf
 def process_header_pdf(raw_payload: dict) -> dict:
     raise NotImplementedError('process_header_pdf not implemented')
 
