@@ -17,29 +17,40 @@ class Settings(BaseSettings):
     rabbitmq_password: str = "admin123"
 
 
-class ExchangesAndRouting(BaseSettings):
-    """Exchanges and routing keys for the application
+class RabbitMQExchanges(BaseSettings):
+    gateway_exchange: dict = {
+        "type": "topic",
+        "durable": False,
+        "auto_delete": True
+    }
 
-    Attributes:
-        embedding_exchange (str): Embedding exchange name
-        embedding_embed_routing_key (str): Embedding routing key
-        embedding_rerank_routing_key (str): Rerank routing key
-        file_exchange (str): File exchange name
-        file_get_presigned_url_routing_key (str): Get presigned url routing key
-        file_file_uploaded_routing_key (str): File uploaded routing key
-        response_exchange (str): Response exchange name
-    """
-    embedding_exchange: str = "embedding_exchange"
-    embedding_embed_routing_key: str = "embed"
-    embedding_rerank_routing_key: str = "rerank"
+    embedding_exchange: dict = {
+        "type": "topic",
+        "durable": False,
+        "auto_delete": True
+    }
 
-    file_exchange: str = "file_exchange"
-    file_get_presigned_url_routing_key: str = "get_presigned_url"
-    file_file_uploaded_routing_key: str = "file_uploaded"
+    file_exchange: dict = {
+        "type": "topic",
+        "durable": False,
+        "auto_delete": True
+    }
 
-    response_exchange: str = "response_exchange"
+
+class RabbitMQQueues(BaseSettings):
+    job_queue: dict = {
+        "durable": False,
+        "auto_delete": True
+    }
+
+    response_queue: dict = {
+        "durable": False,
+        "auto_delete": True
+    }
 
 
 # Create instances
 settings = Settings()
-exchanges_routing = ExchangesAndRouting()
+exchanges = RabbitMQExchanges()
+queues = RabbitMQQueues()
+

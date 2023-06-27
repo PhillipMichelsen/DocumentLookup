@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
 
-class GetPresignedURLRequest(BaseModel):
+class UploadFileRequest(BaseModel):
     filename: str
 
 
-class GetPresignedURLResponse(BaseModel):
+class UploadFileResponse(BaseModel):
     presigned_url: str = None
     error: str = None

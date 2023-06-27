@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import embedding_service_router, file_service_router
-from app.utils.pika_helper_gateway import pika_handler
+from app.routers import file_service_router
+from app.utils.pika_utils import pika_helper
+from app.utils.task_utils import task_helper
 
 app = FastAPI()
 
 # Add routers
-app.include_router(embedding_service_router.router, prefix="/embedding", tags=["embedding"])
 app.include_router(file_service_router.router, prefix="/files", tags=["files"])
 
 # Add middleware
@@ -24,9 +24,11 @@ app.add_middleware(
 # Startup event
 @app.on_event("startup")
 async def startup():
-    print("Starting!!!")
+    await pika_helper.init_connection()
+    await pika_helper.load_exchanges()
+    await pika_helper.load_queues()
 
-    await pika_handler.init_connection()
+    await task_helper.load_tasks_yaml()
 
 
 # Root route
