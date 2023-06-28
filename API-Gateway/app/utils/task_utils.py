@@ -5,7 +5,7 @@ import aioredis
 import asyncio
 
 from app.utils.pika_utils import pika_helper
-from app.schemas.task_schema import Task, Job
+from app.schemas.tasks_schema import Task, Job
 
 
 class TaskRedis:
@@ -17,8 +17,8 @@ class TaskRedis:
         self.redis_tasks = aioredis.from_url("redis://localhost", db=0, charset="utf-8", decode_responses=True)
         self.redis_job_data = aioredis.from_url("redis://localhost", db=1, charset="utf-8", decode_responses=True)
 
-    async def initialize_task(self, task_id: str, task: Task, initial_data: dict) -> None:
-        await self.redis_tasks.hset(task_id, mapping=task.dict())
+    async def initialize_task(self, task_id: str, task: dict, initial_data: dict) -> None:
+        await self.redis_tasks.hset(task_id, mapping=task)
         await self.redis_job_data.set(task_id, json.dumps(initial_data))
 
     async def remove_task(self, task_id: str) -> None:
@@ -28,6 +28,9 @@ class TaskRedis:
     async def get_full_task_details(self, task_id: str) -> Task:
         task = await self.redis_tasks.hgetall(task_id)
         return Task.parse_obj(task)
+
+    async def get_single_task_detail(self, task_id: str, attribute: str) -> str:
+        return await self.redis_tasks.hget(task_id, attribute)
 
     async def update_full_task_details(self, task_id: str, task: Task) -> None:
         await self.redis_tasks.hset(task_id, mapping=task.dict())
@@ -68,60 +71,69 @@ class TaskHelper:
             status="initialized"
         )
 
-        await task_redis.initialize_task(task_id, task, initial_data)
+        await task_redis.initialize_task(task_id, task.dict(), initial_data)
 
         return task_id
 
     async def remove_task(self, task_id: str) -> None:
-        # TODO: Implement, calls task_redis.remove_task, deletes task from endpoint_returns if it exists
-        raise NotImplementedError
+        await task_redis.remove_task(task_id)
+
+        if task_id in self.endpoint_returns:
+            del self.endpoint_returns[task_id]
 
     async def create_future(self, task_id: str) -> asyncio.Future:
         future = asyncio.Future()
         self.endpoint_returns[task_id] = future
         return future
 
-    async def update_future(self, task_id: str) -> None:
+    async def update_future(self, task_id: str, result: any) -> None:
         future = self.endpoint_returns[task_id]
-        future.set_result(True)
+        future.set_result(result)
 
-    async def start_task(self, task_id: str) -> None:
-        await pika_helper.publish_job(task_id)
-        await task_redis.update_single_task_detail(task_id, "status", "started")
-
-    async def handle_job_response(self, task_id: str, response: dict) -> None:
-        await task_redis.update_job_data(task_id, response)
-        await pika_helper.publish_job(task_id)
-
-    async def _fetch_job_details(self, job_name: str) -> dict:
-        # TODO: Implement, fetch details of a job from self.jobs
-        raise NotImplementedError
-
-    async def _fetch_next_job(self, task_id: str) -> str:
-        # TODO: Implement, determines the next job in the task given task_id
-        raise NotImplementedError
+    async def fetch_next_job(self, task_name: str, current_job: str) -> str:
+        current_job_index = self.tasks[task_name]['jobs'].index(current_job)
+        return self.tasks[task_name]['jobs'][current_job_index + 1]
 
 
 class JobExecutor:
     async def execute_job(self, task_id: str) -> None:
-        # TODO: Implement, calls the correct job function based on the job type
-        raise NotImplementedError
+        current_job = await task_redis.get_single_task_detail(task_id, "current_job")
+        job_details = Job.parse_obj(task_helper.jobs[current_job])
 
-    async def _execute_job_process(self, task_id: str, job_details: dict) -> None:
-        # TODO: Implement, fetches job data of task_id and sends to exchange and routing key in job_details
-        raise NotImplementedError
+        if job_details.type == "process":
+            await self._execute_job_process(task_id, job_details)
 
-    async def _execute_job_return(self, task_id: str) -> None:
-        # TODO: Implement, updates the future of task_id with the job data of task_id
-        raise NotImplementedError
+        elif job_details.type == "return":
+            await self._execute_job_return(task_id)
 
-    async def _execute_job_wait(self, task_id: str) -> None:
+        elif job_details.type == "wait":
+            await self._execute_job_wait(task_id)
+
+        elif job_details.type == "end":
+            await self._execute_job_end(task_id)
+
+    @staticmethod
+    async def _execute_job_process(task_id: str, job_details: Job) -> None:
+        exchange = job_details.exchange
+        routing_key = job_details.routing_key
+        job_data = await task_redis.get_job_data(task_id)
+
+        pika_helper.publish_message(exchange, routing_key, job_data)
+
+    @staticmethod
+    async def _execute_job_return(task_id: str) -> None:
+        job_data = await task_redis.get_job_data(task_id)
+        await task_helper.update_future(task_id, job_data)
+
+    @staticmethod
+    async def _execute_job_wait(task_id: str) -> None:
         # TODO: Implement, waits for a message from the exchange and routing key in job_details
         raise NotImplementedError
 
-    async def _execute_job_end(self, task_id: str) -> None:
-        # TODO: Implement, updates the status of task_id to "completed". Deletes task after 10 seconds.
-        raise NotImplementedError
+    @staticmethod
+    async def _execute_job_end(task_id: str) -> None:
+        await asyncio.sleep(10)
+        await task_helper.remove_task(task_id)
 
 
 # Create singletons

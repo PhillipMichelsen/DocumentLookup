@@ -1,0 +1,12 @@
+queues:
+    job_queue:
+        name: job_queue
+        durable: false
+        auto_delete: false
+        uuid: false
+
+    response_queue:
+        name: response_queue
+        durable: false
+        auto_delete: false
+        uuid: true

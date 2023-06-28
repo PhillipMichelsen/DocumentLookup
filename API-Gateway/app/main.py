@@ -25,10 +25,9 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await pika_helper.init_connection()
-    await pika_helper.load_exchanges()
-    await pika_helper.load_queues()
-
     await task_helper.load_tasks_yaml()
+
+
 
 
 # Root route
