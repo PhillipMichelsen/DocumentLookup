@@ -12,45 +12,14 @@ class Settings(BaseSettings):
     """
     cors_allowed_origins: list[str] = ["*"]
 
+    # Core service settings
+    service_type: str = "gateway"
+    service_name: str = "api_gateway"
+
     rabbitmq_host: str = "rabbitmq"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
 
 
-class RabbitMQExchanges(BaseSettings):
-    gateway_exchange: dict = {
-        "type": "topic",
-        "durable": False,
-        "auto_delete": True
-    }
-
-    embedding_exchange: dict = {
-        "type": "topic",
-        "durable": False,
-        "auto_delete": True
-    }
-
-    file_exchange: dict = {
-        "type": "topic",
-        "durable": False,
-        "auto_delete": True
-    }
-
-
-class RabbitMQQueues(BaseSettings):
-    job_queue: dict = {
-        "durable": False,
-        "auto_delete": True
-    }
-
-    response_queue: dict = {
-        "durable": False,
-        "auto_delete": True
-    }
-
-
 # Create instances
 settings = Settings()
-exchanges = RabbitMQExchanges()
-queues = RabbitMQQueues()
-

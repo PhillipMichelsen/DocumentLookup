@@ -64,6 +64,12 @@ services:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin123
     container_name: rabbitmq
+    
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    container_name: redis
 
 
 volumes:

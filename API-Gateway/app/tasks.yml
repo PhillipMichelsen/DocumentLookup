@@ -1,61 +1,71 @@
 tasks:
   upload_file:
     jobs:
-      - get_presigned_url
-      - return_presigned_url
-      - wait_for_file
-      - process_file
-      - store_text_postgres
-      - generate_embeddings
-      - store_embeddings
-      - update_text_postgres
-      - end
+      - "get_presigned_url"
+      - "return_presigned_url"
+      - "wait_for_file"
+      - "process_file"
+      - "store_text_postgres"
+      - "generate_embeddings"
+      - "store_embeddings"
+      - "update_text_postgres"
+      - "end"
+
+  test-embed:
+    jobs:
+      - "generate_embeddings"
+      - "return_embeddings"
+      - "end"
 
 jobs:
   get_presigned_url:
-    name: get_presigned_url
-    type: process
-    exchange: file_service
-    routing_key: get_presigned_url
+    name: "get_presigned_url"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "get_presigned_url"
 
   return_presigned_url:
-    name: return_presigned_url
-    type: return
+    name: "return_presigned_url"
+    type: "return"
+
+  return_embeddings:
+    name: "return_embeddings"
+    type: "return"
 
   wait_for_file:
-    name: wait_for_file
-    type: wait
+    name: "wait_for_file"
+    type: "wait"
 
   process_file:
-    name: process_file
-    type: process
-    exchange: file_service
-    routing_key: process_file
+    name: "process_file"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "process_file"
 
   store_text_postgres:
-    name: store_text_postgres
-    type: process
-    exchange: file_service
-    routing_key: store_text
+    name: "store_text_postgres"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "store_text"
 
   generate_embeddings:
-    name: generate_embeddings
-    type: process
-    exchange: embedding_service
-    routing_key: embed_text
+    name: "generate_embeddings"
+    type: "process"
+    exchange: "embedding_exchange"
+    routing_key: "embed_text"
 
   store_embeddings:
-    name: store_embeddings
-    type: process
-    exchange: embedding_service
-    routing_key: store_embeddings
+    name: "store_embeddings"
+    type: "process"
+    exchange: "embedding_exchange"
+    routing_key: "store_embeddings"
 
   update_text_postgres:
-    name: update_text_postgres
-    type: process
-    exchange: file_service
-    routing_key: update_text
+    name: "update_text_postgres"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "update_text"
 
   end:
-    name: end
-    type: end
+    name: "end"
+    type: "end"

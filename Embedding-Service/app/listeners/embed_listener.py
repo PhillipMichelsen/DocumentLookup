@@ -10,6 +10,7 @@ def on_message_embed(ch, method, properties, body):
     Decodes payload and sends to the embed handler. Response from handler is encoded and sent to response queue.
     """
     data = json.loads(body.decode('utf-8'))
+    print(data)
 
     response = handle_embed(data)
     response_encoded = response.json().encode('utf-8')

@@ -1,18 +1,12 @@
 exchanges:
   gateway_exchange:
-    name: gateway_exchange
-    type: direct
+    name: 'gateway_exchange'
+    type: 'topic'
     durable: false
     auto_delete: false
 
   embedding_exchange:
-    name: embedding_exchange
-    type: direct
-    durable: false
-    auto_delete: false
-
-  file_exchange:
-    name: file_exchange
-    type: direct
+    name: 'embedding_exchange'
+    type: 'direct'
     durable: false
     auto_delete: false

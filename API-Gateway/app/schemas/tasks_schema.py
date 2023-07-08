@@ -1,17 +1,17 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
 
 
 class Task(BaseModel):
-    task_name: str
+    name: str
     current_job: str
     original_gateway_id: str
     status: str
 
 
 class Job(BaseModel):
-    job_name: str
+    name: str
     type: str
-    exchange: Optional[str]
-    routing_key: Optional[str]
-
+    exchange: Optional[str] = None
+    routing_key: Optional[str] = None
