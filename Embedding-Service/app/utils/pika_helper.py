@@ -34,24 +34,26 @@ class PikaHandler:
         if self.debug:
             print(f"+ Registered consumer for queue: {queue_name}, routing key: {routing_key}", flush=True)
 
-    def send_response(self, response, correlation_id, delivery_tag, reply_to):
-        """Sends a response to the response_exchange
+    def send_response(self, response, delivery_tag, headers):
+        """Sends a response to the gateway_exchange
 
         :param response: Response to send
-        :param correlation_id: Correlation id of the request
         :param delivery_tag: Delivery tag of the request
-        :param reply_to: Routing key to send the response to
+        :param headers: Headers dictionary to include in the message
         """
+        properties = pika.BasicProperties(
+            headers=headers,  # Include headers in properties
+        )
         self.channel.basic_publish(
-            exchange=settings.response_exchange,
-            routing_key=reply_to,
-            properties=pika.BasicProperties(correlation_id=correlation_id),
+            exchange=settings.gateway_exchange,
+            routing_key='.response',
+            properties=properties,
             body=response
         )
         self.channel.basic_ack(delivery_tag=delivery_tag)
 
         if self.debug:
-            print(f"|| Sent response to routing key: {reply_to}", flush=True)
+            print(f"|| Sent response to routing key: .response", flush=True)
 
     def start_consuming(self):
         """Starts consuming messages from the registered consumers."""

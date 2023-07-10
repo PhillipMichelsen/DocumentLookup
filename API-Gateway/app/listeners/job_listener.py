@@ -1,10 +1,11 @@
 import aio_pika
 import json
+import logging
 
 from app.handlers.job_handler import handle_job
 
 
 async def job_callback(message: aio_pika.IncomingMessage):
     decoded_message = json.loads(message.body.decode('utf-8'))
-    print(f"Received job {decoded_message}", flush=True)
+    logging.info(f"[*] Received job: {decoded_message}")
     await handle_job(decoded_message, message.headers)

@@ -1,14 +1,14 @@
 queues:
   job_queue:
     name: 'job_queue'
-    routing_key: '#.job'
+    routing_key: '.job'
     durable: false
     auto_delete: false
     uuid: false
 
   response_queue:
     name: 'response_queue'
-    routing_key: '#.response'
+    routing_key: '.response'
     durable: false
     auto_delete: false
     uuid: true

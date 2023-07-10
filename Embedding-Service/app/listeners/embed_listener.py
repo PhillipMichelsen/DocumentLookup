@@ -10,14 +10,13 @@ def on_message_embed(ch, method, properties, body):
     Decodes payload and sends to the embed handler. Response from handler is encoded and sent to response queue.
     """
     data = json.loads(body.decode('utf-8'))
-    print(data)
+    print(f"Received embed request!", flush=True)
 
     response = handle_embed(data)
-    response_encoded = response.json().encode('utf-8')
+    response = response.json()
 
     pika_handler.send_response(
-        response=response_encoded,
-        correlation_id=properties.correlation_id,
+        response=response.encode('utf-8'),
         delivery_tag=method.delivery_tag,
-        reply_to=properties.reply_to
+        headers=properties.headers
     )

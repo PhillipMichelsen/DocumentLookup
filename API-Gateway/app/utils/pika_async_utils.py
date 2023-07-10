@@ -1,5 +1,6 @@
 import asyncio
 import uuid
+import logging
 
 import aio_pika
 import yaml
@@ -36,14 +37,16 @@ class PikaHelperAsync:
                 )
                 self.channel = await self.connection.channel()
                 self.service_id = str(uuid.uuid4())
+
+                logging.info(f"Connected to RabbitMQ as {self.service_type}. Service ID : {self.service_id}")
                 break
 
             except aio_pika.exceptions.AMQPConnectionError as e:
-                print(f"Attempt {attempt} - Error connecting to RabbitMQ: {str(e)}")
                 if attempt < max_retries:
                     await asyncio.sleep(delay)
                 else:
-                    raise
+                    logging.error(f"Could not connect to RabbitMQ after {max_retries} attempts. Exiting.")
+                    raise e
 
     async def declare_exchanges(self):
         with open('app/exchanges.yml') as f:
@@ -63,10 +66,7 @@ class PikaHelperAsync:
 
             self.external_exchanges[exchange['name']] = declared_exchange
 
-            print(f"Declared exchange {exchange['name']}", flush=True)
-            print(type(declared_exchange), flush=True)
-
-        print(self.external_exchanges, flush=True)
+            logging.debug(f"Declared exchange : {exchange['name']}")
 
     async def declare_queues(self):
         with open('app/service_queues.yml') as f:
@@ -80,13 +80,12 @@ class PikaHelperAsync:
                 auto_delete=queue.get('auto_delete', False)
             )
 
-            await declared_queue.bind(self.service_exchange, routing_key=queue['routing_key'])
+            await declared_queue.bind(self.service_exchange, routing_key=f"#{queue['routing_key']}")
+            await declared_queue.bind(self.service_exchange, routing_key=f"{self.service_id}{queue['routing_key']}")
 
             self.service_queues[queue['name']] = declared_queue
 
-            print(f"Declared queue {queue['name']}, bound to {self.service_exchange} with routing key {queue['routing_key']} ", flush=True)
-
-        print(self.service_queues, flush=True)
+            logging.debug(f"Declared queue : {queue['name']}")
 
     async def publish_message(self, exchange_name: str, routing_key: str, headers: dict, message: bytes):
         """Publish a message to an exchange
@@ -104,8 +103,9 @@ class PikaHelperAsync:
             routing_key=routing_key
         )
 
-        print(f"Published message to {exchange_name} with routing key {routing_key}", flush=True)
-        print(f"Message: {message}", flush=True)
+        logging.info(f"[+] Published message to {exchange_name} with routing key {routing_key}")
+        logging.debug(f"   Message : {message} \n"
+                      f"   Headers : {headers}")
 
 
 pika_helper = PikaHelperAsync()

@@ -6,21 +6,18 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
-    container_name: api-gateway-api
     depends_on:
       - rabbitmq
 
   embedding_service_api:
     build: ./Embedding-Service
     command: python app/main.py
-    container_name: embedding-service-api
     depends_on:
       - rabbitmq
 
   file_service_api:
     build: ./File-Service
     command: python app/main.py
-    container_name: file-service-api
     depends_on:
       - rabbitmq
       - file_service_minio
@@ -30,7 +27,6 @@ services:
     image: lfoppiano/grobid:0.7.2
     ports:
       - "8070:8070"
-    container_name: file-service-grobid
 
   file_service_minio:
     image: minio/minio
@@ -40,7 +36,6 @@ services:
       - "9001:9001"
     volumes:
       - file_service_minio_data:/data
-    container_name: file-service-minio
 
   file_service_postgres:
     image: postgres
@@ -52,7 +47,6 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin123
       - POSTGRES_DB=file_service
-    container_name: file-service-postgres
 
 
   rabbitmq:
@@ -63,13 +57,11 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin123
-    container_name: rabbitmq
     
   redis:
     image: redis
     ports:
       - "6379:6379"
-    container_name: redis
 
 
 volumes:

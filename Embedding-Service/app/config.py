@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     rabbitmq_password: str = "admin123"
 
     embedding_exchange: str = "embedding_exchange"
-    response_exchange: str = "response_exchange"
+    gateway_exchange: str = "gateway_exchange"
     debug: bool = True
 
 

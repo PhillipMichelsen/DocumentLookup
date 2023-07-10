@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,6 +12,7 @@ from app.listeners.response_listener import response_callback
 
 
 app = FastAPI()
+logging.basicConfig(level=logging.ERROR)
 
 # Add routers
 app.include_router(core_tasks.router, prefix="/core-tasks", tags=["core-tasks"])
@@ -27,6 +30,8 @@ app.add_middleware(
 # Startup event
 @app.on_event("startup")
 async def startup():
+    logging.info('Starting up...')
+
     await pika_helper.init_connection()
     task_redis.connect_redis()
     task_helper.load_tasks_yaml()
@@ -37,7 +42,7 @@ async def startup():
     await pika_helper.service_queues['job_queue'].consume(job_callback)
     await pika_helper.service_queues['response_queue'].consume(response_callback)
 
-    print("Startup complete", flush=True)
+    logging.info('***** Started up! *****')
 
 
 # Root route
