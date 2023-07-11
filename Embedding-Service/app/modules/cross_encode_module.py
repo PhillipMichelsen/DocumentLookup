@@ -1,4 +1,5 @@
 from typing import List, Tuple
+import logging
 import os
 
 from sentence_transformers import CrossEncoder
@@ -6,7 +7,7 @@ from sentence_transformers import CrossEncoder
 from app.config import settings
 
 cross_embedding_model = CrossEncoder(os.path.join(settings.embedding_models_folder, settings.cross_encoding_model))
-print("Cross-encoder model loaded!", flush=True)
+logging.info("[*] Cross-encoding model loaded!")
 
 
 def generate_cross_encoding(query: str, sentences: List[str]) -> List[Tuple[str, float]]:

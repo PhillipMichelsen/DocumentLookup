@@ -1,13 +1,14 @@
 version: '3.8'
 
 services:
-  api_gateway_api:
-    build: ./API-Gateway
+  gateway_service_api:
+    build: ./Gateway-Service
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     depends_on:
       - rabbitmq
+      - redis
 
   embedding_service_api:
     build: ./Embedding-Service

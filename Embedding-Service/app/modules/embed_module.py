@@ -1,4 +1,5 @@
 import os.path
+import logging
 from typing import List
 
 from sentence_transformers import SentenceTransformer
@@ -6,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 from app.config import settings
 
 embedding_model = SentenceTransformer(os.path.join(settings.embedding_models_folder, settings.embedding_model))
-print("Embedding model loaded!", flush=True)
+logging.info("[*] Embedding model loaded!")
 
 
 def generate_embedding(sentences: List[str]) -> List[List[float]]:

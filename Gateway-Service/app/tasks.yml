@@ -11,7 +11,7 @@ tasks:
       - "update_text_postgres"
       - "end"
 
-  test-embed:
+  embed_text:
     jobs:
       - "generate_embeddings"
       - "return_embeddings"

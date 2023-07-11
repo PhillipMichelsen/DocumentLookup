@@ -1,3 +1,5 @@
+import logging
+
 import pika
 
 from app.config import settings
@@ -11,14 +13,14 @@ class PikaHandler:
             port=5672,
             virtual_host='/',
             credentials=pika.PlainCredentials(settings.rabbitmq_username, settings.rabbitmq_password),
-            connection_attempts=100,
+            connection_attempts=10,
             retry_delay=10,
         ))
         self.channel = self.connection.channel()
-        self.exchange_name = settings.embedding_exchange
+        self.exchange_name = settings.service_exchange
         self.channel.exchange_declare(exchange=self.exchange_name, exchange_type='direct')
         self.debug = settings.debug
-        print(f"Connected to RabbitMQ as {self.exchange_name}, host: {settings.rabbitmq_host}", flush=True)
+        logging.info(f"[!] Connected to RabbitMQ as {self.exchange_name}, host: {settings.rabbitmq_host}")
 
     def register_consumer(self, queue_name, routing_key, on_message_callback):
         """Registers a consumer for a queue and routing key.
@@ -31,8 +33,7 @@ class PikaHandler:
         self.channel.queue_bind(exchange=self.exchange_name, queue=queue_name, routing_key=routing_key)
         self.channel.basic_consume(queue=queue_name, on_message_callback=on_message_callback, auto_ack=False)
 
-        if self.debug:
-            print(f"+ Registered consumer for queue: {queue_name}, routing key: {routing_key}", flush=True)
+        logging.info(f"[*] Registered consumer for queue: {queue_name}, routing key: {routing_key}")
 
     def send_response(self, response, delivery_tag, headers):
         """Sends a response to the gateway_exchange
@@ -52,12 +53,11 @@ class PikaHandler:
         )
         self.channel.basic_ack(delivery_tag=delivery_tag)
 
-        if self.debug:
-            print(f"|| Sent response to routing key: .response", flush=True)
+        logging.debug(f"[-] Sent response for task: {headers['task_id']}")
 
     def start_consuming(self):
         """Starts consuming messages from the registered consumers."""
-        print("Waiting for messages...", flush=True)
+        logging.info("[*] Waiting for messages. To exit press CTRL+C")
         self.channel.start_consuming()
 
 

@@ -4,20 +4,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.utils.pika_async_utils import pika_helper
-from app.utils.task_utils import task_helper, task_redis, job_executor
-from app.routers import core_tasks
 from app.listeners.job_listener import job_callback
 from app.listeners.response_listener import response_callback
+from app.routers import core_tasks
+from app.utils.pika_async_utils import pika_helper
+from app.utils.task_utils import task_helper, task_redis
 
-
+# Create FastAPI app, setup logging
 app = FastAPI()
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.INFO)
 
-# Add routers
+# Routers
 app.include_router(core_tasks.router, prefix="/core-tasks", tags=["core-tasks"])
 
-# Add middleware
+# Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allowed_origins,
@@ -33,8 +33,8 @@ async def startup():
     logging.info('Starting up...')
 
     await pika_helper.init_connection()
-    task_redis.connect_redis()
-    task_helper.load_tasks_yaml()
+    await task_redis.connect_redis()
+    await task_helper.load_tasks_yaml()
 
     await pika_helper.declare_exchanges()
     await pika_helper.declare_queues()
@@ -45,7 +45,7 @@ async def startup():
     logging.info('***** Started up! *****')
 
 
-# Root route
+# Root Route
 @app.get("/")
 def root():
     return {"message": "Working!!"}

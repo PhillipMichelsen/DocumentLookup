@@ -3,10 +3,10 @@ from typing import List
 from pydantic import BaseModel
 
 
-class TaskTestEmbedRequest(BaseModel):
+class TaskEmbedTextRequest(BaseModel):
     sentences: List[str]
 
 
-class TaskTestEmbedResponse(BaseModel):
+class TaskEmbedTextResponse(BaseModel):
     embedding: List[List[float]] = None
     error: str = None

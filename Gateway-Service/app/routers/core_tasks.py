@@ -1,22 +1,23 @@
-from fastapi import APIRouter
 import json
 import logging
 
-from app.schemas.core_tasks import test_embedding
-from app.utils.task_utils import task_helper
+from fastapi import APIRouter
+
+from app.schemas.core_tasks import embed_text
 from app.utils.pika_async_utils import pika_helper
+from app.utils.task_utils import task_helper
 
 router = APIRouter()
 
 
-@router.post(path="/test-embed",
-             name="Test Embedding",
-             description="Tests the embedding task",
-             response_model=test_embedding.TaskTestEmbedResponse
+@router.post(path="/embed-text",
+             name="Embed Text",
+             description="Embeds text given",
+             response_model=embed_text.TaskEmbedTextResponse
              )
-async def route_upload_file(request: test_embedding.TaskTestEmbedRequest):
+async def route_upload_file(request: embed_text.TaskEmbedTextRequest):
     logging.info(f"[!] Received new request...")
-    headers, return_future = await task_helper.create_task("test-embed", json.dumps(request.dict()))
+    headers, return_future = await task_helper.create_task("embed_text", json.dumps(request.dict()))
     message = json.dumps({"task_id": headers["task_id"]})
 
     await pika_helper.publish_message(
@@ -30,4 +31,4 @@ async def route_upload_file(request: test_embedding.TaskTestEmbedRequest):
     response = json.loads(response)
     logging.info(f"[*] Returning response to user...")
 
-    return test_embedding.TaskTestEmbedResponse(**response)
+    return embed_text.TaskEmbedTextResponse(**response)

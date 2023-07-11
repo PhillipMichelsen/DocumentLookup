@@ -1,6 +1,6 @@
 import asyncio
-import uuid
 import logging
+import uuid
 
 import aio_pika
 import yaml

@@ -1,6 +1,7 @@
-import aio_pika
 import json
 import logging
+
+import aio_pika
 
 from app.handlers.job_handler import handle_job
 

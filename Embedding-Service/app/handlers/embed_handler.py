@@ -16,7 +16,9 @@ def handle_embed(decoded_payload: Any) -> EmbedResponse:
     """
     try:
         request = EmbedRequest.parse_obj(decoded_payload)
+
         embedding = generate_embedding(request.sentences)
+
         response = EmbedResponse(embedding=embedding)
 
     except ValidationError as e:
