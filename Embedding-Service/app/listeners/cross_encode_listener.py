@@ -11,7 +11,7 @@ def on_message_rerank(ch, method, properties, body):
     Decodes payload and sends to the cross-encode handler. Response from handler is encoded and sent to response queue.
     """
     data = json.loads(body.decode('utf-8'))
-    logging.debug(f"[+] Received cross-encode job for task: {data['task_id']}")
+    logging.debug(f"[+] Received cross-encode job for task: {properties.headers['task_id']}")
 
     response = handle_cross_encode(data)
     response = response.json()

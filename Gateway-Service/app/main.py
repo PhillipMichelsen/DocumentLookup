@@ -40,7 +40,9 @@ async def startup():
     await pika_helper.declare_queues()
 
     await pika_helper.service_queues['job_queue'].consume(job_callback)
+    await pika_helper.service_queues[f'{pika_helper.service_id}_job_queue'].consume(job_callback)
     await pika_helper.service_queues['response_queue'].consume(response_callback)
+    await pika_helper.service_queues[f'{pika_helper.service_id}_response_queue'].consume(job_callback)
 
     logging.info('***** Started up! *****')
 

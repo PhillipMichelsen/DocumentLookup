@@ -17,8 +17,8 @@ class TaskRedis:
 
     async def connect_redis(self):
         """Connects to Redis"""
-        self.redis_tasks = aioredis.from_url("redis://redis", db=0, decode_responses=True)
-        self.redis_job_data = aioredis.from_url("redis://redis", db=1, decode_responses=True)
+        self.redis_tasks = aioredis.from_url("redis://redis-service", db=0, decode_responses=True)
+        self.redis_job_data = aioredis.from_url("redis://redis-service", db=1, decode_responses=True)
         logging.info("Connected to Redis")
 
     async def initialize_task(self, task_id: str, task: dict, initial_data: str) -> None:
@@ -292,7 +292,6 @@ class JobExecutor:
         """
         logging.info(f"[+] Executing end job for task {task_id}")
         await task_redis.update_single_task_detail(task_id, "status", "completed")
-        await asyncio.sleep(10)
         await task_helper.remove_task(task_id)
 
 

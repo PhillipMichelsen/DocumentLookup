@@ -2,20 +2,26 @@ tasks:
   upload_file:
     jobs:
       - "get_presigned_url"
-      - "return_presigned_url"
+      - "RETURN"
       - "wait_for_file"
       - "process_file"
       - "store_text_postgres"
       - "generate_embeddings"
       - "store_embeddings"
       - "update_text_postgres"
-      - "end"
+      - "END"
 
   embed_text:
     jobs:
       - "generate_embeddings"
-      - "return_embeddings"
-      - "end"
+      - "RETURN"
+      - "END"
+
+  rerank_text:
+    jobs:
+      - "rerank_text"
+      - "RETURN"
+      - "END"
 
 jobs:
   get_presigned_url:
@@ -23,14 +29,6 @@ jobs:
     type: "process"
     exchange: "file_exchange"
     routing_key: "get_presigned_url"
-
-  return_presigned_url:
-    name: "return_presigned_url"
-    type: "return"
-
-  return_embeddings:
-    name: "return_embeddings"
-    type: "return"
 
   wait_for_file:
     name: "wait_for_file"
@@ -54,6 +52,12 @@ jobs:
     exchange: "embedding_exchange"
     routing_key: "embed_text"
 
+  rerank_text:
+    name: "rerank_text"
+    type: "process"
+    exchange: "embedding_exchange"
+    routing_key: "rerank_text"
+
   store_embeddings:
     name: "store_embeddings"
     type: "process"
@@ -66,6 +70,10 @@ jobs:
     exchange: "file_exchange"
     routing_key: "update_text"
 
-  end:
-    name: "end"
+  RETURN:
+    name: "RETURN"
+    type: "return"
+
+  END:
+    name: "END"
     type: "end"

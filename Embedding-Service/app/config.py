@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     embedding_models_folder: str = os.path.join(BASE_DIR, 'embedding_models')
 
     # Redis settings
-    rabbitmq_host: str = "rabbitmq"
+    rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
 

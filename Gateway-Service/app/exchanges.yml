@@ -1,7 +1,7 @@
 exchanges:
   gateway_exchange:
     name: 'gateway_exchange'
-    type: 'topic'
+    type: 'direct'
     durable: false
     auto_delete: false
 

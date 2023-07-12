@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     service_name: str = "api_gateway"
 
     # Redis settings
-    rabbitmq_host: str = "rabbitmq"
+    rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
 

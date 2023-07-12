@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embedding-service-deployment
+  labels:
+    app: embedding-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: embedding-service
+  template:
+    metadata:
+      labels:
+        app: embedding-service
+    spec:
+      containers:
+      - name: embedding-service
+        image: embedding-service-api:v1
+        imagePullPolicy: Never

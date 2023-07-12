@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -8,5 +8,5 @@ class TaskEmbedTextRequest(BaseModel):
 
 
 class TaskEmbedTextResponse(BaseModel):
-    embedding: List[List[float]] = None
-    error: str = None
+    embedding: Optional[List[List[float]]]
+    error: Optional[str]

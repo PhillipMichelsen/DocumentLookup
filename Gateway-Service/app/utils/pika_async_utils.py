@@ -30,6 +30,7 @@ class PikaHelperAsync:
         """
         for attempt in range(1, max_retries + 1):
             try:
+                print(settings.rabbitmq_host, settings.rabbitmq_username, settings.rabbitmq_password, flush=True)
                 self.connection = await aio_pika.connect_robust(
                     host=settings.rabbitmq_host,
                     login=settings.rabbitmq_username,
@@ -75,17 +76,21 @@ class PikaHelperAsync:
 
         for queue in queues:
             declared_queue = await self.channel.declare_queue(
-                queue['name'],
+                f"{self.service_id}{queue['name']}" if queue['uuid'] else queue['name'],
                 durable=queue.get('durable', False),
                 auto_delete=queue.get('auto_delete', False)
             )
 
-            await declared_queue.bind(self.service_exchange, routing_key=f"#{queue['routing_key']}")
-            await declared_queue.bind(self.service_exchange, routing_key=f"{self.service_id}{queue['routing_key']}")
-
-            self.service_queues[queue['name']] = declared_queue
-
-            logging.debug(f"Declared queue : {queue['name']}")
+            if queue['uuid']:
+                uuid_queue_name = f"{self.service_id}{queue['name']}"
+                uuid_routing_key = f"{self.service_id}{queue['routing_key']}"
+                await declared_queue.bind(self.service_exchange, routing_key=uuid_routing_key)
+                self.service_queues[uuid_queue_name] = declared_queue
+                logging.debug(f"Declared queue : {uuid_queue_name}")
+            else:
+                await declared_queue.bind(self.service_exchange, routing_key=f"{queue['routing_key']}")
+                self.service_queues[queue['name']] = declared_queue
+                logging.debug(f"Declared queue : {queue['name']}")
 
     async def publish_message(self, exchange_name: str, routing_key: str, headers: dict, message: bytes):
         """Publish a message to an exchange
