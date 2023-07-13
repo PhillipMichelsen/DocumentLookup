@@ -267,7 +267,7 @@ class JobExecutor:
             message=message.encode('utf-8')
         )
 
-        await task_redis.update_single_task_detail(task_id, "status", "processing_background")
+        await task_redis.update_single_task_detail(task_id, "status", "background")
 
     @staticmethod
     async def _execute_job_wait(task_id: str, job_details: Job) -> None:
@@ -291,7 +291,6 @@ class JobExecutor:
         :param task_id: The task ID
         """
         logging.info(f"[+] Executing end job for task {task_id}")
-        await task_redis.update_single_task_detail(task_id, "status", "completed")
         await task_helper.remove_task(task_id)
 
 

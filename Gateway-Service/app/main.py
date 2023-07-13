@@ -12,7 +12,7 @@ from app.utils.task_utils import task_helper, task_redis
 
 # Create FastAPI app, setup logging
 app = FastAPI()
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 
 # Routers
 app.include_router(core_tasks.router, prefix="/core-tasks", tags=["core-tasks"])
