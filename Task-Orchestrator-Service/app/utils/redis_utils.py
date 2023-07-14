@@ -1,50 +1,58 @@
-import aioredis
+import redis
 
 from app.schemas.task_schemas import TaskSchema
+from app.schemas.job_schemas import JobSchema
 
 
 class TaskRedis:
     def __init__(self):
         self.redis = None
 
-    async def init_connection(self):
-        self.redis = await aioredis.from_url("redis://redis-service", db=0, decode_responses=True)
+    def init_connection(self):
+        self.redis = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
 
-    async def create_task(self, task_id: str, task: TaskSchema) -> None:
-        await self.redis.hset(task_id, mapping=task.model_dump)
+    def create_task(self, task_id: str, task: TaskSchema) -> None:
+        self.redis.hset(task_id, mapping=task.model_dump())
 
-    async def update_task_detail(self, task_id: str, attribute: str, value: str) -> None:
-        await self.redis.hset(task_id, attribute, value)
+    def update_task_attribute(self, task_id: str, attribute: str, value: str) -> None:
+        self.redis.hset(task_id, attribute, value)
 
-    async def get_task_detail(self, task_id: str, attribute: str) -> str:
-        return await self.redis.hget(task_id, attribute)
+    def get_task_attribute(self, task_id: str, attribute: str) -> str:
+        return self.redis.hget(task_id, attribute)
 
-    async def get_task(self, task_id: str) -> TaskSchema:
-        task = await self.redis.hgetall(task_id)
+    def get_task(self, task_id: str) -> TaskSchema:
+        task = self.redis.hgetall(task_id)
         return TaskSchema(**task)
 
-    async def delete_task(self, task_id: str) -> None:
-        await self.redis.delete(task_id)
+    def update_task(self, task: TaskSchema) -> None:
+        self.redis.hset(task.task_id, mapping=task.model_dump())
+
+    def delete_task(self, task_id: str) -> None:
+        self.redis.delete(task_id)
 
 
 class JobRedis:
     def __init__(self):
         self.redis = None
 
-    async def init_connection(self):
-        self.redis = await aioredis.from_url("redis://redis-service", db=1, decode_responses=True)
+    def init_connection(self):
+        self.redis = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
 
-    async def create_job(self, job_id: str) -> None:
-        await self.redis.set(job_id, "PENDING")
+    def create_job(self, job_id: str, job: JobSchema) -> None:
+        self.redis.hset(job_id, mapping=job.model_dump())
 
-    async def update_content(self, job_id: str, result: str) -> None:
-        await self.redis.set(job_id, result)
+    def update_job_attribute(self, job_id: str, attribute: str, value: str) -> None:
+        self.redis.hset(job_id, attribute, value)
 
-    async def get_content(self, job_id: str) -> str:
-        return await self.redis.get(job_id)
+    def get_job_attribute(self, job_id: str, attribute: str) -> str:
+        return self.redis.hget(job_id, attribute)
 
-    async def delete_job(self, job_id: str) -> None:
-        await self.redis.delete(job_id)
+    def get_job(self, job_id: str) -> JobSchema:
+        job = self.redis.hgetall(job_id)
+        return JobSchema(**job)
+
+    def delete_job(self, job_id: str) -> None:
+        self.redis.delete(job_id)
 
 
 # Singleton instances

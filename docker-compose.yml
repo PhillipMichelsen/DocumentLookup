@@ -9,6 +9,12 @@ services:
       - rabbitmq
       - redis
 
+  task_orchestrator_service_api:
+    build: ./Task-Orchestrator-Service
+    depends_on:
+      - rabbitmq
+      - redis
+
   embedding_service_api:
     build: ./Embedding-Service
     depends_on:

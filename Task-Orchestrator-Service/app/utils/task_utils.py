@@ -1,48 +1,59 @@
-import asyncio
-import uuid
+import yaml
 
 from app.utils.redis_utils import task_redis, job_redis
+from app.utils.job_utils import job_utils
 from app.schemas.task_schemas import TaskSchema, TasksSchema
 
 
 class TaskUtils:
     def __init__(self):
-        self.tasks = None
+        self.tasks = {}
 
-    async def load_tasks(self, task_file: str = "app/tasks.yaml") -> None:
+    def load_tasks(self, task_file: str = "app/tasks.yaml") -> None:
         with open(task_file, "r") as stream:
             config = yaml.safe_load(stream)
 
             for task_name, task_config in config['tasks'].items():
                 self.tasks[task_name] = TasksSchema(**task_config)
 
-    async def create_task(self, task_name: str, api_gateway_id: str) -> str:
-        task_id = str(uuid.uuid4())
+    def create_task(self, task_name: str, task_id: str, api_gateway_id: str, initial_request: str) -> TaskSchema:
+        jobs = list()
+        for job_index, job_name in enumerate(self.tasks[task_name].jobs):
+            if job_index == 0:
+                job_id = job_utils.create_job(
+                    job_name=job_name,
+                    task_id=task_id,
+                    previous_job_id="START",
+                    initial_request=initial_request
+                )
+            else:
+                job_id = job_utils.create_job(
+                    job_name=job_name,
+                    task_id=task_id,
+                    previous_job_id=jobs[job_index - 1],
+                    initial_request="WAITING"
+                )
+
+            jobs.append(job_id)
 
         task = TaskSchema(
             name=task_name,
             task_id=task_id,
-            current_job=self.tasks[task_name]['jobs'][0],
+            job_chain=','.join(jobs),
+            current_job_index=0,
             api_gateway_id=api_gateway_id,
-            status="CREATED"
+            status="INITIALIZED"
         )
 
-        await task_redis.create_task(task_id, task)
+        task_redis.create_task(task_id, task)
 
-        return task_id
+        return task
 
-    async def get_next_job(self, task_name: str, current_job: str) -> str:
-        current_job_index = self.tasks[task_name]['jobs'].index(current_job)
-        return self.tasks[task_name]['jobs'][current_job_index + 1]
-
-    async def step_task_job(self, task_id: str) -> None:
-        task = await task_redis.get_task(task_id)
-
-        if task.current_job == "END":
-            pass
-        else:
-            next_job = await self.get_next_job(task.name, task.current_job)
-            await task_redis.update_task_detail(task_id, "current_job", next_job)
+    @staticmethod
+    def step_job_chain(task_id: str) -> str:
+        task = task_redis.get_task(task_id)
+        task_redis.set_task_attribute(task_id, "current_job_index", task.current_job_index + 1)
+        return task.job_chain[task.current_job_index + 1]
 
 
 # Singleton instance

@@ -1,0 +1,24 @@
+tasks:
+  upload_file:
+    jobs:
+      - "get_presigned_url"
+      - "RETURN"
+      - "wait_for_file"
+      - "process_file"
+      - "store_text_postgres"
+      - "generate_embeddings"
+      - "store_embeddings"
+      - "update_text_postgres"
+      - "END"
+
+  embed_text:
+    jobs:
+      - "generate_embeddings"
+      - "RETURN"
+      - "END"
+
+  rerank_text:
+    jobs:
+      - "rerank_text"
+      - "RETURN"
+      - "END"

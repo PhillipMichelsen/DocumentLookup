@@ -1,0 +1,54 @@
+jobs:
+  get_presigned_url:
+    name: "get_presigned_url"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "get_presigned_url"
+
+  wait_for_file:
+    name: "wait_for_file"
+    type: "wait"
+
+  process_file:
+    name: "process_file"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "process_file"
+
+  store_text_postgres:
+    name: "store_text_postgres"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "store_text"
+
+  generate_embeddings:
+    name: "generate_embeddings"
+    type: "process"
+    exchange: "embedding_exchange"
+    routing_key: "embed_text"
+
+  rerank_text:
+    name: "rerank_text"
+    type: "process"
+    exchange: "embedding_exchange"
+    routing_key: "rerank_text"
+
+  store_embeddings:
+    name: "store_embeddings"
+    type: "process"
+    exchange: "embedding_exchange"
+    routing_key: "store_embeddings"
+
+  update_text_postgres:
+    name: "update_text_postgres"
+    type: "process"
+    exchange: "file_exchange"
+    routing_key: "update_text"
+
+  RETURN:
+    name: "RETURN"
+    type: "return"
+
+  END:
+    name: "END"
+    type: "end"
