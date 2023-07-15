@@ -4,11 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.listeners.job_listener import job_callback
 from app.listeners.response_listener import response_callback
 from app.routers import core_tasks
-from app.utils.pika_async_utils import pika_helper
-from app.utils.task_utils import task_helper, task_redis
+from app.utils.pika_utils import pika_helper
 
 # Create FastAPI app, setup logging
 app = FastAPI()
@@ -32,17 +30,23 @@ app.add_middleware(
 async def startup():
     logging.info('Starting up...')
 
-    await pika_helper.init_connection()
-    await task_redis.connect_redis()
-    await task_helper.load_tasks_yaml()
+    await pika_helper.init_connection(
+        host=settings.rabbitmq_host,
+        username=settings.rabbitmq_username,
+        password=settings.rabbitmq_password
+    )
 
-    await pika_helper.declare_exchanges()
-    await pika_helper.declare_queues()
+    await pika_helper.declare_exchanges(
+        service_exchange=settings.service_exchange,
+        task_orchestrator_exchange=settings.task_orchestrator_exchange
+    )
 
-    await pika_helper.service_queues['job_queue'].consume(job_callback)
-    await pika_helper.service_queues[f'{pika_helper.service_id}_job_queue'].consume(job_callback)
-    await pika_helper.service_queues['response_queue'].consume(response_callback)
-    await pika_helper.service_queues[f'{pika_helper.service_id}_response_queue'].consume(job_callback)
+    await pika_helper.declare_queues(
+        task_request_queue='task_request_queue',
+        task_request_routing_key='task_request'
+    )
+
+    await pika_helper.response_queue.consume(response_callback)
 
     logging.info('***** Started up! *****')
 

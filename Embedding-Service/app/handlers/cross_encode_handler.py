@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 from typing import Any
 from app.modules.cross_encode_module import rerank, generate_cross_encoding
-from app.schemas.cross_encode_schema import CrossEncodeRequest, CrossEncodeResponse
+from app.schemas.jobs.cross_encode_schemas import CrossEncodeRequest, CrossEncodeResponse
 
 
 def handle_cross_encode(decoded_payload: Any) -> CrossEncodeResponse:

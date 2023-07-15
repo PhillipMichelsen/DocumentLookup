@@ -6,14 +6,17 @@ class Settings(BaseSettings):
 
     cors_allowed_origins: list[str] = ["*"]
 
-    # Core service settings
-    service_type: str = "gateway"
-    service_name: str = "api_gateway"
+    # --- Core service settings ---
+    service_name: str = "gateway_service"
 
-    # Redis settings
+    # --- RabbitMQ settings ---
     rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
+
+    service_exchange: str = "gateway_exchange"
+    task_orchestrator_exchange: str = "task_orchestrator_exchange"
+    task_orchestrator_request_routing_key: str = "task_request"
 
 
 # Create instances

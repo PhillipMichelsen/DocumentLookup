@@ -1,15 +1,15 @@
 import redis
 
-from app.schemas.task_schemas import TaskSchema
 from app.schemas.job_schemas import JobSchema
+from app.schemas.task_schemas import TaskSchema
 
 
 class TaskRedis:
     def __init__(self):
         self.redis = None
 
-    def init_connection(self):
-        self.redis = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
+    def init_connection(self, host: str, port: int, db: int) -> None:
+        self.redis = redis.Redis(host=host, port=port, db=db, decode_responses=True)
 
     def create_task(self, task_id: str, task: TaskSchema) -> None:
         self.redis.hset(task_id, mapping=task.model_dump())
@@ -35,8 +35,8 @@ class JobRedis:
     def __init__(self):
         self.redis = None
 
-    def init_connection(self):
-        self.redis = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
+    def init_connection(self, host: str, port: int, db: int) -> None:
+        self.redis = redis.Redis(host=host, port=port, db=db, decode_responses=True)
 
     def create_job(self, job_id: str, job: JobSchema) -> None:
         self.redis.hset(job_id, mapping=job.model_dump())

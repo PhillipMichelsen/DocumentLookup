@@ -8,5 +8,4 @@ class EmbedRequest(BaseModel):
 
 
 class EmbedResponse(BaseModel):
-    embedding: List[List[float]] = None
-    error: str = None
+    embedding: List[List[float]]

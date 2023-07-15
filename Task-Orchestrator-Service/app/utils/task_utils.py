@@ -1,15 +1,15 @@
 import yaml
 
-from app.utils.redis_utils import task_redis, job_redis
-from app.utils.job_utils import job_utils
 from app.schemas.task_schemas import TaskSchema, TasksSchema
+from app.utils.job_utils import job_utils
+from app.utils.redis_utils import task_redis
 
 
 class TaskUtils:
     def __init__(self):
         self.tasks = {}
 
-    def load_tasks(self, task_file: str = "app/tasks.yaml") -> None:
+    def load_tasks(self, task_file) -> None:
         with open(task_file, "r") as stream:
             config = yaml.safe_load(stream)
 
@@ -52,8 +52,9 @@ class TaskUtils:
     @staticmethod
     def step_job_chain(task_id: str) -> str:
         task = task_redis.get_task(task_id)
-        task_redis.set_task_attribute(task_id, "current_job_index", task.current_job_index + 1)
-        return task.job_chain[task.current_job_index + 1]
+        task_redis.update_task_attribute(task_id, "current_job_index", task.current_job_index + 1)
+
+        return task.job_chain.split(',')[task.current_job_index + 1]
 
 
 # Singleton instance

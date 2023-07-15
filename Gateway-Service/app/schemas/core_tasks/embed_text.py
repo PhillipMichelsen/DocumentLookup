@@ -8,5 +8,4 @@ class TaskEmbedTextRequest(BaseModel):
 
 
 class TaskEmbedTextResponse(BaseModel):
-    embedding: Optional[List[List[float]]]
-    error: Optional[str]
+    embedding: List[List[float]]

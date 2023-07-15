@@ -1,18 +1,20 @@
+import json
 import uuid
+
 import yaml
 
-from app.schemas.job_schemas import JobsSchema, JobSchema
-from app.utils.pika_utils import pika_helper
-from app.utils.redis_utils import task_redis, job_redis
-
 from app.config import settings
+from app.schemas.job_schemas import JobsSchema, JobSchema, JobRequest, JobResponse
+from app.schemas.task_schemas import TaskResponse
+from app.utils.pika_utils import pika_utils
+from app.utils.redis_utils import task_redis, job_redis
 
 
 class JobUtils:
     def __init__(self):
         self.jobs = {}
 
-    def load_jobs(self, job_file: str = "app/jobs.yaml") -> None:
+    def load_jobs(self, job_file) -> None:
         with open(job_file, "r") as stream:
             config = yaml.safe_load(stream)
 
@@ -41,42 +43,65 @@ class JobUtils:
         job_info = self.jobs[job.name]
 
         if job_info.type == "process":
-            self._execute_process_job(job_id, job, job_info)
+            self._execute_process_job(job, job_info)
         elif job_info.type == "return":
-            self._execute_return_job(job_id, job)
+            self._execute_return_job(job)
         elif job_info.type == "wait":
             self._execute_wait_job()
         elif job_info.type == "end":
-            self._execute_end_job(job_id, job)
+            self._execute_end_job(job)
 
     @staticmethod
-    def _execute_process_job(job_id: str, job: JobSchema, job_info: JobsSchema) -> None:
-        pika_helper.publish_message(
+    def _execute_process_job(job: JobSchema, job_info: JobsSchema) -> None:
+        job_request = JobRequest(
+            job_id=job.job_id
+        )
+
+        job_request = json.dumps(job_request.model_dump())
+
+        pika_utils.publish_message(
             exchange_name=job_info.exchange,
             routing_key=job_info.routing_key,
-            message=job_id
+            message=job_request.encode('utf-8')
         )
-        job_redis.update_job_attribute(job_id, "status", "SENT")
+        job_redis.update_job_attribute(job.job_id, "status", "SENT")
         task_redis.update_task_attribute(job.task_id, "status", "PROCESSING")
 
     @staticmethod
-    def _execute_return_job(job_id: str, job: JobSchema) -> None:
-        pika_helper.publish_message(
-            exchange=settings.service_exchange,
-            routing_key=task_redis.get_task_attribute(job.task_id, "api_gateway_id"),
-            message=job.content
+    def _execute_return_job(job: JobSchema) -> None:
+        task_response = TaskResponse(
+            task_id=job.task_id,
+            content=job_redis.get_job_attribute(job.previous_job_id, "content")
         )
-        job_redis.update_job_attribute(job_id, "status", "SENT")
+        task_response = json.dumps(task_response.model_dump())
+
+        pika_utils.publish_message(
+            exchange_name=settings.gateway_exchange,
+            routing_key=task_redis.get_task_attribute(job.task_id, "api_gateway_id"),
+            message=task_response.encode('utf-8')
+        )
+        job_redis.update_job_attribute(job.job_id, "status", "SENT")
         task_redis.update_task_attribute(job.task_id, "status", "RETURNED")
+
+        job_response = JobResponse(
+            job_id=job.job_id
+        )
+        job_response = json.dumps(job_response.model_dump())
+
+        pika_utils.publish_message(
+            exchange_name=settings.service_exchange,
+            routing_key='job_response',
+            message=job_response.encode('utf-8')
+        )
 
     def _execute_wait_job(self):
         pass
 
     @staticmethod
-    def _execute_end_job(job_id: str, job: JobSchema) -> None:
+    def _execute_end_job(job: JobSchema) -> None:
         task = task_redis.get_task(job.task_id)
 
-        for job_id in task.job_chain.join(','):
+        for job_id in task.job_chain.split(','):
             job_redis.delete_job(job_id)
 
         task_redis.delete_task(job.task_id)

@@ -1,27 +1,26 @@
-from pydantic import ValidationError
-from typing import Any
 from app.modules.embed_module import generate_embedding
-from app.schemas.embed_schema import EmbedRequest, EmbedResponse
+from app.schemas.jobs.embed_schemas import EmbedRequest, EmbedResponse
+from app.schemas.job_schemas import JobRequest, JobResponse
+from app.utils.redis_utils import job_redis_utils
+from app.utils.pika_utils import pika_utils
+import json
 
 
-def handle_embed(decoded_payload: Any) -> EmbedResponse:
-    """Handles embedding request from `on_message_embed` in `embed_listener`.
+def handle_embed(decoded_message_body):
+    request = JobRequest(**decoded_message_body)
+    job = job_redis_utils.get_job(request.job_id)
+    embed_request = EmbedRequest.model_validate(json.loads(job.content))
 
-    Passes decoded payload through schema and sends to `generate_embedding` in `embed_module`.
+    embeddings = generate_embedding(embed_request.sentences)
 
-    :param decoded_payload: Decoded payload from the request
-    :return: Embedding response
+    embed_response = EmbedResponse(embedding=embeddings)
 
-    :raises ValidationError: If the payload is invalid
-    """
-    try:
-        request = EmbedRequest.parse_obj(decoded_payload)
+    job_redis_utils.update_job_attribute(job.job_id, "content", json.dumps(embed_response.model_dump()))
+    job_redis_utils.update_job_attribute(job.job_id, "status", "COMPLETED")
 
-        embedding = generate_embedding(request.sentences)
+    job_response = JobResponse(job_id=request.job_id)
+    job_response = json.dumps(job_response.model_dump())
 
-        response = EmbedResponse(embedding=embedding)
-
-    except ValidationError as e:
-        response = EmbedResponse(error=str(e))
-
-    return response
+    pika_utils.publish_response(
+        message=job_response.encode()
+    )
