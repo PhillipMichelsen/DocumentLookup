@@ -6,7 +6,7 @@ from sentence_transformers import CrossEncoder
 
 from app.config import settings
 
-cross_embedding_model = CrossEncoder(os.path.join(settings.embedding_models_folder, settings.cross_encoding_model))
+cross_embedding_model = CrossEncoder(settings.cross_encoding_model)
 logging.info("[*] Cross-encoding model loaded!")
 
 

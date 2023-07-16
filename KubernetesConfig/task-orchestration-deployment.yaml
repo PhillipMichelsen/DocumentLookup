@@ -16,5 +16,7 @@ spec:
     spec:
       containers:
       - name: task-orchestration-service
-        image: task-orchestration-service-api:v1
-        imagePullPolicy: IfNotPresent
+        image: documentarchive.azurecr.io/task-orchestration-service-api:v1
+        imagePullPolicy: Always
+      imagePullSecrets:
+        - name: acr-secret

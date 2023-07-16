@@ -16,7 +16,9 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: api-gateway-service-api:v1
-        imagePullPolicy: IfNotPresent
+        image: documentarchive.azurecr.io/api-gateway-service-api:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
+      imagePullSecrets:
+        - name: acr-secret

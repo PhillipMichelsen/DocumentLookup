@@ -16,5 +16,7 @@ spec:
     spec:
       containers:
       - name: embedding-service
-        image: embedding-service-api:v1
-        imagePullPolicy: IfNotPresent
+        image: documentarchive.azurecr.io/embedding-service-api:v1
+        imagePullPolicy: Always
+      imagePullSecrets:
+        - name: acr-secret

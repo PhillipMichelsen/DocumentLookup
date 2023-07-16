@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 
 from app.config import settings
 
-embedding_model = SentenceTransformer(os.path.join(settings.embedding_models_folder, settings.embedding_model))
+embedding_model = SentenceTransformer(settings.embedding_model)
 logging.info("[*] Embedding model loaded!")
 
 

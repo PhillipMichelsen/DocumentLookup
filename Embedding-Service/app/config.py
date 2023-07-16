@@ -11,10 +11,8 @@ class Settings(BaseSettings):
     # --- Core service settings ---
     service_name: str = "embedding_service"
 
-    embedding_model: str = "multi-qa-mpnet-base-dot-v1"
-    cross_encoding_model: str = "ms-marco-MiniLM-L-12-v2"
-
-    embedding_models_folder: str = os.path.join(BASE_DIR, 'embedding_models')
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    cross_encoding_model: str = "cross-encoder/ms-marco-MiniLM-L-12-v2"
 
     # --- RabbitMQ settings ---
     rabbitmq_host: str = "rabbitmq-service"
