@@ -5,7 +5,7 @@ metadata:
   labels:
     app: task-orchestration-service
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: task-orchestration-service
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: task-orchestration-service
-        image: documentarchive.azurecr.io/task-orchestration-service-api:v1
+        image: documentlookup.azurecr.io/task-orchestration-service-api:dev
         imagePullPolicy: Always
       imagePullSecrets:
         - name: acr-secret
