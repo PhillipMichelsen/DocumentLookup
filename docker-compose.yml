@@ -3,22 +3,25 @@ version: '3.8'
 services:
   gateway_service_api:
     build: ./Gateway-Service
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     depends_on:
       - rabbitmq
       - redis
 
+  task_orchestrator_service_api:
+    build: ./Task-Orchestrator-Service
+    depends_on:
+      - rabbitmq
+      - redis
+
   embedding_service_api:
     build: ./Embedding-Service
-    command: python app/main.py
     depends_on:
       - rabbitmq
 
   file_service_api:
     build: ./File-Service
-    command: python app/main.py
     depends_on:
       - rabbitmq
       - file_service_minio
