@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_and_push:
-    if: github.event.pull_request.merged == true
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
