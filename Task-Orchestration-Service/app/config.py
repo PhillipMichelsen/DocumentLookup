@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     service_exchange: str = "task_orchestrator_exchange"
     gateway_exchange: str = "gateway_exchange"
 
+    task_request_queue: str = "task_request_queue"
+    task_request_queue_routing_key: str = "task_request"
+
+    job_response_queue: str = "job_response_queue"
+    job_response_queue_routing_key: str = "job_response"
+
     # --- Redis settings ---
     redis_host: str = "redis-service"
     redis_port: int = 6379

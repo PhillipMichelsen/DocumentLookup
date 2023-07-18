@@ -32,7 +32,7 @@ def initialize():
 
 
 initialize()
-pika_utils.register_consumer('task_request_queue', 'task_request', task_request_callback)
-pika_utils.register_consumer('job_response_queue', 'job_response', job_response_callback)
+pika_utils.register_consumer(settings.task_request_queue, settings.task_request_queue_routing_key, task_request_callback)
+pika_utils.register_consumer(settings.job_response_queue, settings.job_response_queue_routing_key, job_response_callback)
 
 pika_utils.start_consuming()

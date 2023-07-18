@@ -18,8 +18,8 @@ job_redis_utils.init_connection(
     db=1
 )
 
-pika_utils.register_consumer('vector_queue_embed', 'embed_text', on_message_embed)
-pika_utils.register_consumer('vector_queue_rerank', 'rerank_text', on_message_rerank)
+pika_utils.register_consumer(settings.vector_queue_embed, settings.vector_queue_embed_routing_key, on_message_embed)
+pika_utils.register_consumer(settings.vector_queue_rerank, settings.vector_queue_rerank_routing_key, on_message_rerank)
 
 # Start consuming messages
 pika_utils.start_consuming()

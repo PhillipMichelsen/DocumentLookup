@@ -3,7 +3,7 @@ import uuid
 
 from fastapi import APIRouter
 
-from app.schemas.core_tasks import embed_text, rerank_text
+from app.schemas.core_tasks import embed_text_schemas, rerank_text_schemas
 from app.schemas.task_request import TaskRequest
 from app.utils.pika_utils import pika_helper
 from app.utils.response_utils import response_utils
@@ -16,9 +16,9 @@ router = APIRouter()
 @router.post(path="/embed-text",
              name="Embed Text",
              description="Embeds text given",
-             response_model=embed_text.TaskEmbedTextResponse
+             response_model=embed_text_schemas.TaskEmbedTextResponse
              )
-async def route_upload_file(request: embed_text.TaskEmbedTextRequest):
+async def route_upload_file(request: embed_text_schemas.TaskEmbedTextRequest):
     task_id = str(uuid.uuid4())
 
     task = TaskRequest(
@@ -36,15 +36,15 @@ async def route_upload_file(request: embed_text.TaskEmbedTextRequest):
 
     response = await response_future
 
-    return embed_text.TaskEmbedTextResponse.model_validate(json.loads(response))
+    return embed_text_schemas.TaskEmbedTextResponse.model_validate(json.loads(response))
 
 
 @router.post(path="/rerank-text",
              name="Rerank Text",
              description="Re-ranks text given",
-             response_model=rerank_text.TaskRerankTextResponse
+             response_model=rerank_text_schemas.TaskRerankTextResponse
              )
-async def route_upload_file(request: rerank_text.TaskRerankTextRequest):
+async def route_upload_file(request: rerank_text_schemas.TaskRerankTextRequest):
     task_id = str(uuid.uuid4())
 
     task = TaskRequest(
@@ -62,4 +62,4 @@ async def route_upload_file(request: rerank_text.TaskRerankTextRequest):
 
     response = await response_future
 
-    return rerank_text.TaskRerankTextResponse.model_validate(json.loads(response))
+    return rerank_text_schemas.TaskRerankTextResponse.model_validate(json.loads(response))

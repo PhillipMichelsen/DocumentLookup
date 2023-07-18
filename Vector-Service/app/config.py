@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
     task_orchestrator_response_routing_key: str = "job_response"
 
+    # Queue Names + Routing Keys\
+    vector_queue_embed: str = "vector_queue_embed"
+    vector_queue_embed_routing_key: str = "embed_text"
+
+    vector_queue_rerank: str = "vector_queue_rerank"
+    vector_queue_rerank_routing_key: str = "rerank_text"
+
     # --- Redis settings ---
     redis_host: str = "redis-service"
     redis_port: int = 6379

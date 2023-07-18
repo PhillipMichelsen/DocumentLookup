@@ -13,6 +13,9 @@ class JobRedisUtils:
         :param host: The host of the Redis server
         :param port: The port of the Redis server
         :param db: The database of the Redis server to use
+        :return: None
+
+        :raises redis.exceptions.ConnectionError: If the connection cannot be established
         """
         try:
             self.redis = redis.Redis(host=host, port=port, db=db, decode_responses=True)
@@ -24,6 +27,7 @@ class JobRedisUtils:
 
         :param job_id: The ID of the job
         :param job: The job to create
+        :return: None
         """
         self.redis.hset(job_id, mapping=job.model_dump())
 
@@ -33,6 +37,7 @@ class JobRedisUtils:
         :param job_id: The ID of the job
         :param attribute: The attribute to update
         :param value: The new value of the attribute
+        :return: None
         """
         self.redis.hset(job_id, attribute, value)
 
@@ -41,6 +46,7 @@ class JobRedisUtils:
 
         :param job_id: The ID of the job
         :param attribute: The attribute to get
+        :return: The value of the attribute
         """
         return self.redis.hget(job_id, attribute)
 
@@ -48,6 +54,7 @@ class JobRedisUtils:
         """Gets a job from Redis, and returns it as a JobSchema object
 
         :param job_id: The ID of the job
+        :return: The job as a JobSchema object
         """
         job = self.redis.hgetall(job_id)
         return JobSchema(**job)
@@ -56,6 +63,7 @@ class JobRedisUtils:
         """Deletes a job from Redis
 
         :param job_id: The ID of the job
+        :return: None
         """
         self.redis.delete(job_id)
 

@@ -20,6 +20,7 @@ class PikaUtilsTaskOrchestrator:
         :param host: The host of the RabbitMQ server
         :param username: The username of the RabbitMQ server
         :param password: The password of the RabbitMQ server
+        :return: None
 
         :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
@@ -38,7 +39,12 @@ class PikaUtilsTaskOrchestrator:
         except pika.exceptions.AMQPConnectionError as e:
             raise e
 
-    def declare_exchanges(self, exchanges_file: str):
+    def declare_exchanges(self, exchanges_file: str) -> None:
+        """Declares exchanges from a YAML file
+
+        :param exchanges_file: The path to the YAML file
+        :return: None
+        """
         with open(exchanges_file) as f:
             data = yaml.safe_load(f)
             exchanges = data['exchanges'].values()
@@ -60,6 +66,7 @@ class PikaUtilsTaskOrchestrator:
         :param on_message_callback:
         :param queue_name: The name of the queue
         :param routing_key: The routing key
+        :return: None
         """
         self.channel.queue_declare(
             queue=queue_name,
@@ -84,6 +91,7 @@ class PikaUtilsTaskOrchestrator:
         :param exchange_name: The name of the exchange
         :param routing_key: The routing key
         :param message: The message to publish
+        :return: None
         """
         self.channel.basic_publish(
             exchange=exchange_name,
@@ -92,7 +100,10 @@ class PikaUtilsTaskOrchestrator:
         )
 
     def start_consuming(self) -> None:
-        """Starts consuming messages from the registered consumers."""
+        """Starts consuming messages from the registered consumers.
+
+        :return: None
+        """
         print(f"Service {self.service_id} is listening for messages...", flush=True)
         self.channel.start_consuming()
 

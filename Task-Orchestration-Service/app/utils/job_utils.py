@@ -14,7 +14,12 @@ class JobUtils:
     def __init__(self):
         self.jobs = {}
 
-    def load_jobs(self, job_file) -> None:
+    def load_jobs(self, job_file: str) -> None:
+        """Load jobs from a YAML file
+
+        :param job_file: Path to the YAML file
+        :return: None
+        """
         with open(job_file, "r") as stream:
             config = yaml.safe_load(stream)
 
@@ -23,6 +28,14 @@ class JobUtils:
 
     @staticmethod
     def create_job(job_name: str, task_id: str, previous_job_id: str, initial_request: str) -> str:
+        """Creates a job
+
+        :param job_name: Name of the job
+        :param task_id: ID of the task
+        :param previous_job_id: ID of the previous job
+        :param initial_request: Initial request to be sent to the job
+        :return: ID of the job
+        """
         job_id = str(uuid.uuid4())
 
         job = JobSchema(
@@ -39,6 +52,11 @@ class JobUtils:
         return job_id
 
     def execute_job(self, job_id: str) -> None:
+        """Executes a job
+
+        :param job_id: ID of the job
+        :return: None
+        """
         job = job_redis.get_job(job_id)
         job_info = self.jobs[job.name]
 
@@ -94,8 +112,10 @@ class JobUtils:
             message=job_response.encode('utf-8')
         )
 
+    @staticmethod
     def _execute_wait_job(self) -> None:
-        pass
+        # TODO: Implement wait job
+        raise NotImplementedError
 
     @staticmethod
     def _execute_end_job(job: JobSchema) -> None:

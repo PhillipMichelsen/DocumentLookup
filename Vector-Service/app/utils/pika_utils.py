@@ -14,12 +14,13 @@ class PikaUtils:
 
         self.service_exchange = None
 
-    def init_connection(self, host: str, username: str, password: str):
+    def init_connection(self, host: str, username: str, password: str) -> None:
         """Initialize connection to RabbitMQ
 
         :param host: The host of the RabbitMQ server
         :param username: The username of the RabbitMQ server
         :param password: The password of the RabbitMQ server
+        :return: None
 
         :raises pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
@@ -44,6 +45,7 @@ class PikaUtils:
         """Declares an exchange on the RabbitMQ server.
 
         :param exchange_name: The name of the exchange to declare
+        :return: None
         """
         self.channel.exchange_declare(
             exchange=exchange_name,
@@ -59,6 +61,7 @@ class PikaUtils:
         :param on_message_callback:
         :param queue_name: The name of the queue
         :param routing_key: The routing key
+        :return: None
         """
         self.channel.queue_declare(
             queue=queue_name,
@@ -81,6 +84,7 @@ class PikaUtils:
         """Publish a response message to the task orchestrator.
 
         :param message: The message to publish
+        :return: None
         """
         self.channel.basic_publish(
             exchange=settings.task_orchestrator_exchange,
@@ -88,7 +92,7 @@ class PikaUtils:
             body=message
         )
 
-    def start_consuming(self):
+    def start_consuming(self) -> None:
         """Starts consuming messages from the registered consumers."""
         print(f"Service {self.service_id} is listening for messages...", flush=True)
         self.channel.start_consuming()
