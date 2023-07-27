@@ -7,7 +7,7 @@ tasks:
       - "process_file"
       - "store_text_postgres"
       - "generate_embeddings"
-      - "store_embeddings"
+      - "store_embeddings_milvus"
       - "update_text_postgres"
       - "END"
 

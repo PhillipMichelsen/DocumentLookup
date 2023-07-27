@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-gateway-service
+  name: api-gateway-core-service
 spec:
   selector:
-    app: api-gateway
+    app: api-gateway-core
   ports:
     - protocol: TCP
       port: 80

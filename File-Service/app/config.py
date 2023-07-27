@@ -1,30 +1,37 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    MINIO_ENDPOINT: str = "file-service-minio:9000"
-    MINIO_ACCESS_KEY: str = "minioadmin"
-    MINIO_SECRET_KEY: str = "minioadmin"
-    MINIO_BUCKET: str = "test"
+    """Settings for the application"""
 
-    POSTGRES_URL: str = "postgresql://admin:admin123@0.0.0.0:5432/file_service"
+    # --- Core service settings ---
+    service_name: str = "file-service"
 
-    rabbitmq_host: str = "rabbitmq"
+    # --- RabbitMQ settings ---
+    rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
-    self_exchange: str = "file_exchange"
-    response_exchange: str = "response_exchange"
 
-    grobid_host: str = "grobid"
-    grobid_port: int = 8070
+    service_exchange: str = "file_exchange"
+    task_orchestrator_exchange: str = "task_orchestrator_exchange"
+    task_orchestrator_response_routing_key: str = "job_response"
+
+    # Queue Names + Routing Keys\
+    #vector_queue_embed: str = "vector_queue_embed"
+    #vector_queue_embed_routing_key: str = "embed_text"
+
+    # --- Redis settings ---
+    redis_host: str = "redis-service"
+    redis_port: int = 6379
+
+    # --- Minio settings ---
+    minio_host: str = "minio-service"
+    minio_access_key: str = "minioadmin"
+    minio_secret_key: str = "minioadmin"
+
+    # --- Weaviate settings ---
+    weaviate_host: str = "weaviate-service"
 
 
-class ServiceEndpoints(BaseSettings):
-    embed_embedding: str = "http://api-gateway-api:8000/embedding/embed"
-    rerank_embedding: str = "http://api-gateway-api:8000/embedding/rerank"
-
-    process_fulltext_grobid: str = "http://file-service-grobid:8070/api/processFulltextDocument"
-
-
+# Create instances
 settings = Settings()
-service_endpoints = ServiceEndpoints()

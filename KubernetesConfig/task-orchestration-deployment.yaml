@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: task-orchestration-service-deployment
+  name: task-orchestration-service-core-deployment
   labels:
-    app: task-orchestration-service
+    app: task-orchestration-service-core
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: task-orchestration-service
+      app: task-orchestration-service-core
   template:
     metadata:
       labels:
-        app: task-orchestration-service
+        app: task-orchestration-service-core
     spec:
       containers:
-      - name: task-orchestration-service
+      - name: task-orchestration-service-core
         image: documentlookup.azurecr.io/task-orchestration-service-api:dev
         imagePullPolicy: Always
       imagePullSecrets:
