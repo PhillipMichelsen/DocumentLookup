@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vector-service-deployment
+  name: vector-service-core-deployment
   labels:
-    app: vector-service
+    app: vector-service-core
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vector-service
+      app: vector-service-core
   template:
     metadata:
       labels:
-        app: vector-service
+        app: vector-service-core
     spec:
       containers:
-      - name: vector-service
-        image: documentlookup.azurecr.io/vector-service-api:dev
+      - name: vector-service-core
+        image: documentlookup.azurecr.io/vector-service-core:latest
         imagePullPolicy: Always
       imagePullSecrets:
         - name: acr-secret

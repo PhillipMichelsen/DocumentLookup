@@ -1,57 +1,58 @@
+#file: noinspection SpellCheckingInspection
 version: '3.8'
 
 services:
-  gateway_service_api:
+  api-gateway-core:
     build: ./Gateway-Service
+    container_name: api-gateway-core-service
     ports:
       - "8000:8000"
     depends_on:
       - rabbitmq
       - redis
 
-  task_orchestrator_service_api:
+  task-orchestration-service-core:
     build: ./Task-Orchestrator-Service
+    container_name: task-orchestration-core-service
     depends_on:
       - rabbitmq
       - redis
 
-  embedding_service_api:
+  embedding-service-core:
     build: ./Embedding-Service
+    container_name: embedding-core-service
     depends_on:
       - rabbitmq
 
-  file_service_api:
+  file-service-core:
     build: ./File-Service
+    container_name: file-core-service
     depends_on:
       - rabbitmq
-      - file_service_minio
-      - file_service_postgres
 
-  file_service_grobid:
-    image: lfoppiano/grobid:0.7.2
+  grobid:
+    image: lfoppiano/grobid:0.7.3
+    container_name: grobid
     ports:
       - "8070:8070"
 
-  file_service_minio:
+  minio:
     image: minio/minio
+    container_name: mino
     command: server --console-address ":9001" --address ":9000" /data
     ports:
       - "9000:9000"
       - "9001:9001"
-    volumes:
-      - file_service_minio_data:/data
 
-  file_service_postgres:
-    image: postgres
+  weaviate:
+    image: semitechnologies/weaviate
     ports:
-      - "5432:5432"
-    volumes:
-      - file_service_postgres_data:/data
+      - "8080:8080"
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin123
-      - POSTGRES_DB=file_service
-
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      CLUSTER_HOSTNAME: 'node1'
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -66,10 +67,3 @@ services:
     image: redis
     ports:
       - "6379:6379"
-
-
-volumes:
-  file_service_minio_data:
-  file_service_postgres_data:
-
-

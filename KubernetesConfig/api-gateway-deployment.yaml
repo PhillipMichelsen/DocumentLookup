@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway-deployment
+  name: api-gateway-core-deployment
   labels:
-    app: api-gateway
+    app: api-gateway-core
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: api-gateway-core
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: api-gateway-core
     spec:
       containers:
-      - name: api-gateway
+      - name: api-gateway-core
         image: documentlookup.azurecr.io/api-gateway-api:dev
         imagePullPolicy: Always
         ports:

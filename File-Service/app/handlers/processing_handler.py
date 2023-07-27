@@ -4,7 +4,6 @@ import httpx
 from app.modules.processing_module import grobid_fulltext_pdf, parse_grobid_output
 from app.schemas.processing_schemas import ProcessFileRequest
 from app.utils.pika_helper import pika_helper
-#from app.config import service_endpoints
 
 
 def handle_process_file(raw_payload: dict):
