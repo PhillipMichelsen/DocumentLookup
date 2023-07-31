@@ -1,10 +1,10 @@
 import json
 import uuid
-from typing import Optional
+from typing import Optional, Any
 import yaml
 
 from app.config import settings
-from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRequest, TaskResponse
+from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteRequest, TaskResponse
 from app.schemas.job_schemas import JobResponse
 from app.utils.job_utils import job_utils
 from app.utils.pika_utils import pika_utils
@@ -41,34 +41,26 @@ class TaskUtils:
 
         return task_id
 
-    def execute_task(self, task_id: str, request_content: Optional[str] = None) -> None:
-        task = task_redis.get_task(task_id)
-
-        if self.tasks[task.task_name].type == 'process':
-            self._execute_process_task(task_id, task, self.tasks[task.task_name], request_content)
-        elif self.tasks[task.task_name].type == 'return':
-            self._execute_return_task(task_id, task)
-        elif self.tasks[task.task_name].type == 'end':
-            self._execute_end_task(task_id, task)
-
     @staticmethod
-    def _execute_process_task(task_id: str, task: TaskSchema, task_attributes: TasksSchema, request_content: str) -> None:
-        message = json.dumps(request_content)
+    def return_task(task: TaskSchema) -> None:
+        job = job_redis.get_job(task.job_id)
 
-        pika_utils.publish_message(
-            exchange_name=task_attributes.exchange,
-            routing_key=task_attributes.routing_key,
-            message=message.encode('utf-8')
+        route_request = TaskRouteRequest(
+            task_id=task.task_id,
+            exchange=task.return_exchange,
+            routing_key=task.return_routing_key
         )
 
-        task_redis.update_task_status(task_id, 'PUBLISHED')
+        message = json.dumps(route_request.model_dump())
+
+        pika_utils.publish_message(
+            exchange_name=settings.gateway_exchange,
+            routing_key=job.return_routing_key,
+            message=message.encode()
+        )
 
     @staticmethod
-    def _execute_return_task(task_id: str, task) -> None:
-        raise NotImplementedError
-
-    @staticmethod
-    def _execute_end_task(task_id: str, task) -> None:
+    def end_task(task: TaskSchema) -> None:
         job = job_redis.get_job(task.job_id)
 
         for task in job.task_chain.split(','):
