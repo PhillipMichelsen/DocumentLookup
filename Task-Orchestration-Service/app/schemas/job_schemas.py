@@ -1,27 +1,29 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
 
 class JobSchema(BaseModel):
-    name: str
+    job_name: str
     job_id: str
-    task_id: str
-    previous_job_id: str
-    content: str
+    return_service_id: Optional[str] = None
+    task_chain: str
+    current_task_index: int
+    initial_request_content: str
     status: str
 
 
 class JobsSchema(BaseModel):
-    name: str
-    type: str
-    exchange: Optional[str] = None
-    routing_key: Optional[str] = None
+    tasks: List[str]
 
 
 class JobRequest(BaseModel):
+    job_name: str
+    return_service_id: Optional[str] = None
     job_id: str
+    initial_request_content: str
 
 
 class JobResponse(BaseModel):
     job_id: str
+    return_content: str

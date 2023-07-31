@@ -15,19 +15,19 @@ class Settings(BaseSettings):
     service_exchange: str = "task_orchestrator_exchange"
     gateway_exchange: str = "gateway_exchange"
 
-    task_request_queue: str = "task_request_queue"
-    task_request_queue_routing_key: str = "task_request"
+    task_response_queue: str = "task_response_queue"
+    task_request_queue_routing_key: str = "task_response"
 
-    job_response_queue: str = "job_response_queue"
-    job_response_queue_routing_key: str = "job_response"
+    job_request_queue: str = "job_request_queue"
+    job_response_queue_routing_key: str = "job_request"
 
     # --- Redis settings ---
     redis_host: str = "redis-service"
     redis_port: int = 6379
 
     # --- YAML Files ---
-    task_file: str = "app/tasks.yaml"
-    job_file: str = "app/jobs.yaml"
+    task_file: str = "app/jobs.yaml"
+    job_file: str = "app/tasks.yaml"
     exchanges_file: str = "app/exchanges.yaml"
 
 

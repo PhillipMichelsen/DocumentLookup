@@ -1,54 +1,26 @@
 jobs:
   get_presigned_url:
-    name: "get_presigned_url"
-    type: "process"
-    exchange: "file_exchange"
-    routing_key: "get_presigned_url"
-
-  wait_for_file:
-    name: "wait_for_file"
-    type: "wait"
+    tasks:
+      - "get_presigned_url"
+      - "RETURN"
+      - "END"
 
   process_file:
-    name: "process_file"
-    type: "process"
-    exchange: "file_exchange"
-    routing_key: "process_file"
+    tasks:
+      - "process_file_grobid"
+      - "store_text_weaviate"
+      - "END"
 
-  store_text_postgres:
-    name: "store_text_postgres"
-    type: "process"
-    exchange: "file_exchange"
-    routing_key: "store_text"
+  embed_text:
+    tasks:
+      - "generate_embeddings"
+      - "store_embeddings_milvus"
+      - "END"
 
-  generate_embeddings:
-    name: "generate_embeddings"
-    type: "process"
-    exchange: "vector_exchange"
-    routing_key: "embed_text"
-
-  rerank_text:
-    name: "rerank_text"
-    type: "process"
-    exchange: "vector_exchange"
-    routing_key: "rerank_text"
-
-  store_embeddings_milvus:
-    name: "store_embeddings"
-    type: "process"
-    exchange: "vector_exchange"
-    routing_key: "store_embeddings"
-
-  update_text_postgres:
-    name: "update_text_postgres"
-    type: "process"
-    exchange: "file_exchange"
-    routing_key: "update_text"
-
-  RETURN:
-    name: "RETURN"
-    type: "return"
-
-  END:
-    name: "END"
-    type: "end"
+  answer_question:
+    tasks:
+      - "generate_embeddings"
+      - "get_similar_text"
+      - "rerank_text"
+      - "RETURN"
+      - "END"

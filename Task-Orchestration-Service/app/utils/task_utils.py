@@ -1,8 +1,14 @@
+import json
+import uuid
+from typing import Optional
 import yaml
 
-from app.schemas.task_schemas import TaskSchema, TasksSchema
+from app.config import settings
+from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRequest, TaskResponse
+from app.schemas.job_schemas import JobResponse
 from app.utils.job_utils import job_utils
-from app.utils.redis_utils import task_redis
+from app.utils.pika_utils import pika_utils
+from app.utils.redis_utils import task_redis, job_redis
 
 
 class TaskUtils:
@@ -10,9 +16,9 @@ class TaskUtils:
         self.tasks = {}
 
     def load_tasks(self, task_file: str) -> None:
-        """Load tasks from YAML file
+        """Load jobs from a YAML file
 
-        :param task_file: Path to YAML file
+        :param task_file: Path to the YAML file
         :return: None
         """
         with open(task_file, "r") as stream:
@@ -21,59 +27,54 @@ class TaskUtils:
             for task_name, task_config in config['tasks'].items():
                 self.tasks[task_name] = TasksSchema(**task_config)
 
-    def create_task(self, task_name: str, task_id: str, api_gateway_id: str, initial_request: str) -> TaskSchema:
-        """Creates a task and its jobs
+    @staticmethod
+    def create_task(task_name: str, job_id: str) -> str:
+        """Creates a task
 
-        :param task_name: Name of the task
-        :param task_id: ID of the task
-        :param api_gateway_id: ID of the API Gateway
-        :param initial_request: Initial request to be sent to the first job
-        :return: The created task as a TaskSchema
+        :param task_name: Name of task
+        :param job_id: ID of job
+        :return: ID of task
         """
-        jobs = list()
-        for job_index, job_name in enumerate(self.tasks[task_name].jobs):
-            if job_index == 0:
-                job_id = job_utils.create_job(
-                    job_name=job_name,
-                    task_id=task_id,
-                    previous_job_id="START",
-                    initial_request=initial_request
-                )
-            else:
-                job_id = job_utils.create_job(
-                    job_name=job_name,
-                    task_id=task_id,
-                    previous_job_id=jobs[job_index - 1],
-                    initial_request="WAITING"
-                )
+        task_id = str(uuid.uuid4())
+        task = TaskSchema(task_name=task_name, task_id=task_id, job_id=job_id, status='CREATED')
+        task_redis.store_task(task)
 
-            jobs.append(job_id)
+        return task_id
 
-        task = TaskSchema(
-            name=task_name,
-            task_id=task_id,
-            job_chain=','.join(jobs),
-            current_job_index=0,
-            api_gateway_id=api_gateway_id,
-            status="INITIALIZED"
-        )
+    def execute_task(self, task_id: str, request_content: Optional[str] = None) -> None:
+        task = task_redis.get_task(task_id)
 
-        task_redis.create_task(task_id, task)
-
-        return task
+        if self.tasks[task.task_name].type == 'process':
+            self._execute_process_task(task_id, task, self.tasks[task.task_name], request_content)
+        elif self.tasks[task.task_name].type == 'return':
+            self._execute_return_task(task_id, task)
+        elif self.tasks[task.task_name].type == 'end':
+            self._execute_end_task(task_id, task)
 
     @staticmethod
-    def step_job_chain(task_id: str) -> str:
-        """Steps the current job in the job chain by moving the current_job_index forward by 1
+    def _execute_process_task(task_id: str, task: TaskSchema, task_attributes: TasksSchema, request_content: str) -> None:
+        message = json.dumps(request_content)
 
-        :param task_id: ID of the task
-        :return: ID of the next job
-        """
-        task = task_redis.get_task(task_id)
-        task_redis.update_task_attribute(task_id, "current_job_index", task.current_job_index + 1)
+        pika_utils.publish_message(
+            exchange_name=task_attributes.exchange,
+            routing_key=task_attributes.routing_key,
+            message=message.encode('utf-8')
+        )
 
-        return task.job_chain.split(',')[task.current_job_index + 1]
+        task_redis.update_task_status(task_id, 'PUBLISHED')
+
+    @staticmethod
+    def _execute_return_task(task_id: str, task) -> None:
+        raise NotImplementedError
+
+    @staticmethod
+    def _execute_end_task(task_id: str, task) -> None:
+        job = job_redis.get_job(task.job_id)
+
+        for task in job.task_chain.split(','):
+            task_redis.delete_task(task)
+
+        job_redis.delete_job(job.job_id)
 
 
-# Singleton instance
 task_utils = TaskUtils()

@@ -1,6 +1,6 @@
 from app.config import settings
-from app.utils.task_utils import task_utils
-from app.utils.job_utils import job_utils
+from app.utils.job_utils import task_utils
+from app.utils.task_utils import job_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
 from app.listeners.job_response_listener import job_response_callback

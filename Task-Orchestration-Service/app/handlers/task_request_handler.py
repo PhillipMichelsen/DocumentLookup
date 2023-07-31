@@ -1,12 +1,12 @@
-from app.schemas.task_schemas import TaskRequest
-from app.utils.job_utils import job_utils
-from app.utils.task_utils import task_utils
+from app.schemas.job_schemas import TaskRequest
+from app.utils.task_utils import job_utils
+from app.utils.job_utils import task_utils
 
 
 def handle_task(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
 
-    task = task_utils.create_task(
+    task = task_utils.store_task(
         task_name=task_request.task_name,
         task_id=task_request.task_id,
         api_gateway_id=task_request.api_gateway_id,
