@@ -1,44 +1,44 @@
 tasks:
   get_presigned_url:
-    name: "get_presigned_url"
-    type: "process"
+    task_name: "get_presigned_url"
+    task_type: "process"
     exchange: "file_exchange"
     routing_key: "get_presigned_url"
 
   process_file:
-    name: "process_file_grobid"
-    type: "process"
+    task_name: "process_file_grobid"
+    task_type: "process"
     exchange: "file_exchange"
     routing_key: "process_file"
 
   generate_embeddings:
-    name: "generate_embeddings"
-    type: "process"
+    task_name: "generate_embeddings"
+    task_type: "process"
     exchange: "vector_exchange"
     routing_key: "embed_text"
 
   rerank_text:
-    name: "rerank_text"
-    type: "process"
+    task_name: "rerank_text"
+    task_type: "process"
     exchange: "vector_exchange"
     routing_key: "rerank_text"
 
   store_embeddings_milvus:
-    name: "store_embeddings"
-    type: "process"
+    task_name: "store_embeddings"
+    task_type: "process"
     exchange: "vector_exchange"
     routing_key: "store_embeddings"
 
   store_text_weaviate:
-    name: "store_text_weaviate"
-    type: "process"
+    task_name: "store_text_weaviate"
+    task_type: "process"
     exchange: "file_exchange"
     routing_key: "store_text"
 
   RETURN:
-    name: "RETURN"
-    type: "return"
+    task_name: "RETURN"
+    task_type: "return"
 
   END:
-    name: "END"
-    type: "end"
+    task_name: "END"
+    task_type: "end"

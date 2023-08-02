@@ -1,28 +1,34 @@
 import json
 
 from app.modules.cross_encode_module import rerank, generate_cross_encoding
-from app.schemas.job_schemas import JobRequest, JobResponse
-from app.schemas.jobs.cross_encode_schemas import CrossEncodeRequest, CrossEncodeResponse
+from app.schemas.task_schemas import TaskRequest, TaskRouteRequest
+from app.schemas.tasks.cross_encode_schemas import CrossEncodeRequest, CrossEncodeResponse
 from app.utils.pika_utils import pika_utils
-from app.utils.redis_utils import job_redis_utils
+from app.utils.response_hold_utils import response_hold
+from app.config import settings
 
 
 def handle_cross_encode(decoded_message_body):
-    request = JobRequest(**decoded_message_body)
-    job = job_redis_utils.get_job(request.job_id)
-    cross_encode_request = CrossEncodeRequest.model_validate(json.loads(job.content))
+    request = TaskRequest.model_validate(decoded_message_body)
+    cross_encode_request = CrossEncodeRequest.model_validate(json.loads(request.content))
 
     sentence_score_pairs = generate_cross_encoding(cross_encode_request.query, cross_encode_request.sentences)
     sentences_ranked, scores_ranked = rerank(sentence_score_pairs)
 
     cross_encode_response = CrossEncodeResponse(sentences=sentences_ranked, scores=scores_ranked)
 
-    job_redis_utils.update_job_attribute(job.job_id, "content", json.dumps(cross_encode_response.model_dump()))
-    job_redis_utils.update_job_attribute(job.job_id, "status", "COMPLETED")
+    response_hold.stash_response(request.task_id, cross_encode_response)
 
-    job_response = JobResponse(job_id=request.job_id)
-    job_response = json.dumps(job_response.model_dump())
+    route_request = TaskRouteRequest(
+        task_id=request.task_id,
+        service_id=pika_utils.service_id,
+        status='COMPLETED'
+    )
 
-    pika_utils.publish_response(
-        message=job_response.encode()
+    message = json.dumps(route_request.model_dump())
+
+    pika_utils.publish_message(
+        exchange_name=settings.task_orchestrator_exchange,
+        routing_key=settings.task_orchestrator_exchange_route_request_routing_key,
+        message=message.encode()
     )

@@ -6,7 +6,7 @@ import yaml
 from app.config import settings
 
 
-class PikaUtilsTaskOrchestrator:
+class PikaUtils:
     def __init__(self):
         self.connection = None
         self.channel = None
@@ -108,4 +108,4 @@ class PikaUtilsTaskOrchestrator:
         self.channel.start_consuming()
 
 
-pika_utils = PikaUtilsTaskOrchestrator()
+pika_utils = PikaUtils()

@@ -3,8 +3,8 @@ from app.utils.job_utils import task_utils
 from app.utils.task_utils import job_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
-from app.listeners.job_response_listener import job_response_callback
-from app.listeners.task_request_listener import task_request_callback
+from app.listeners.task_response_listener import task_response_callback
+from app.listeners.job_request_listener import job_request_callback
 
 
 def initialize():
@@ -32,7 +32,7 @@ def initialize():
 
 
 initialize()
-pika_utils.register_consumer(settings.task_request_queue, settings.task_request_queue_routing_key, task_request_callback)
-pika_utils.register_consumer(settings.job_response_queue, settings.job_response_queue_routing_key, job_response_callback)
+pika_utils.register_consumer(settings.task_request_queue, settings.task_request_queue_routing_key, job_request_callback)
+pika_utils.register_consumer(settings.job_response_queue, settings.job_response_queue_routing_key, task_response_callback)
 
 pika_utils.start_consuming()

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class JobSchema(BaseModel):
     job_name: str
     job_id: str
-    return_service_id: Optional[str] = None
+    requesting_service_id: str
     task_chain: str
     current_task_index: int
     initial_request_content: str
@@ -19,7 +19,7 @@ class JobsSchema(BaseModel):
 
 class JobRequest(BaseModel):
     job_name: str
-    return_service_id: Optional[str] = None
+    requesting_service_id: str
     job_id: str
     initial_request_content: str
 

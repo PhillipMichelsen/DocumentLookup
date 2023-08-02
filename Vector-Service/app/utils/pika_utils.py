@@ -1,13 +1,13 @@
 import uuid
 
 import pika
+import yaml
 
 from app.config import settings
 
 
 class PikaUtils:
     def __init__(self):
-        """Connects to RabbitMQ and declares its exchange."""
         self.connection = None
         self.channel = None
         self.service_id = None
@@ -22,38 +22,43 @@ class PikaUtils:
         :param password: The password of the RabbitMQ server
         :return: None
 
-        :raises pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
+        :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
         try:
             self.connection = pika.BlockingConnection(pika.ConnectionParameters(
-                host=host,
+                host=settings.rabbitmq_host,
                 port=5672,
                 virtual_host='/',
-                credentials=pika.PlainCredentials(
-                    username=username,
-                    password=password
-                ),
+                credentials=pika.PlainCredentials(settings.rabbitmq_username, settings.rabbitmq_password),
                 connection_attempts=10,
                 retry_delay=10,
             ))
             self.channel = self.connection.channel()
             self.service_id = str(uuid.uuid4())
-        except pika.exceptions.AMQPConnectionError as error:
-            raise error
 
-    def declare_service_exchange(self, exchange_name: str) -> None:
-        """Declares an exchange on the RabbitMQ server.
+        except pika.exceptions.AMQPConnectionError as e:
+            raise e
 
-        :param exchange_name: The name of the exchange to declare
+    def declare_exchanges(self, exchanges_file: str) -> None:
+        """Declares exchanges from a YAML file
+
+        :param exchanges_file: The path to the YAML file
         :return: None
         """
-        self.channel.exchange_declare(
-            exchange=exchange_name,
-            exchange_type='direct',
-            durable=False,
-            auto_delete=False
-        )
-        self.service_exchange = exchange_name
+        with open(exchanges_file) as f:
+            data = yaml.safe_load(f)
+            exchanges = data['exchanges'].values()
+
+        for exchange in exchanges:
+            declared_exchange = self.channel.exchange_declare(
+                exchange['name'],
+                exchange['type'],
+                durable=exchange.get('durable', False),
+                auto_delete=exchange.get('auto_delete', False)
+            )
+
+            if exchange['name'] == settings.service_exchange:
+                self.service_exchange = exchange['name']
 
     def register_consumer(self, queue_name: str, routing_key: str, on_message_callback) -> None:
         """Registers a queue and consumes messages from it
@@ -80,23 +85,27 @@ class PikaUtils:
             on_message_callback=on_message_callback
         )
 
-    def publish_response(self, message: bytes) -> None:
-        """Publish a response message to the task orchestrator.
+    def publish_message(self, exchange_name: str, routing_key: str, message: bytes) -> None:
+        """Publish a message to an exchange
 
+        :param exchange_name: The name of the exchange
+        :param routing_key: The routing key
         :param message: The message to publish
         :return: None
         """
         self.channel.basic_publish(
-            exchange=settings.task_orchestrator_exchange,
-            routing_key=settings.task_orchestrator_response_routing_key,
+            exchange=exchange_name,
+            routing_key=routing_key,
             body=message
         )
 
     def start_consuming(self) -> None:
-        """Starts consuming messages from the registered consumers."""
+        """Starts consuming messages from the registered consumers.
+
+        :return: None
+        """
         print(f"Service {self.service_id} is listening for messages...", flush=True)
         self.channel.start_consuming()
 
 
-# Create singleton instance of PikaHandler
 pika_utils = PikaUtils()
