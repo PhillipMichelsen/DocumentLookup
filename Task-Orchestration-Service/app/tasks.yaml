@@ -15,7 +15,7 @@ tasks:
     task_name: "generate_embeddings"
     task_type: "process"
     exchange: "vector_exchange"
-    routing_key: "embed_text"
+    routing_key: "vector_embed"
 
   rerank_text:
     task_name: "rerank_text"

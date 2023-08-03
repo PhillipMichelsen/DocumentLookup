@@ -60,12 +60,13 @@ class PikaUtils:
             if exchange['name'] == settings.service_exchange:
                 self.service_exchange = exchange['name']
 
-    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback) -> None:
+    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback, exchange: str = None) -> None:
         """Registers a queue and consumes messages from it
 
         :param on_message_callback:
         :param queue_name: The name of the queue
         :param routing_key: The routing key
+        :param exchange: The exchange to bind the queue to
         :return: None
         """
         self.channel.queue_declare(
@@ -75,7 +76,7 @@ class PikaUtils:
         )
 
         self.channel.queue_bind(
-            exchange=self.service_exchange,
+            exchange=self.service_exchange if exchange is None else exchange,
             queue=queue_name,
             routing_key=routing_key
         )

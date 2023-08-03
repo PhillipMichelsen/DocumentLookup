@@ -24,3 +24,7 @@ jobs:
       - "rerank_text"
       - "RETURN"
       - "END"
+
+  test_embed:
+    tasks:
+      - "generate_embeddings"

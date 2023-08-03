@@ -1,12 +1,10 @@
 import json
 import uuid
-from typing import Optional, Any, Tuple
+
 import yaml
 
 from app.config import settings
-from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteResponse, TaskRouteRequest
-from app.schemas.job_schemas import JobResponse
-from app.utils.job_utils import job_utils
+from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteResponse
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import task_redis, job_redis
 
@@ -25,7 +23,7 @@ class TaskUtils:
             config = yaml.safe_load(stream)
 
             for task_name, task_config in config['tasks'].items():
-                self.tasks[task_name] = TasksSchema(**task_config)
+                self.tasks[task_name] = TasksSchema.model_validate(task_config)
 
     @staticmethod
     def create_task(task_name: str, job_id: str) -> str:
@@ -78,7 +76,8 @@ class TaskUtils:
         )
 
     @staticmethod
-    def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema, completed_task_service_id: str) -> None:
+    def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema,
+                                       completed_task_service_id: str) -> None:
         completed_task_attributes = task_utils.tasks[completed_task.task_name]
         new_task_attributes = task_utils.tasks[new_task.task_name]
 
@@ -92,7 +91,7 @@ class TaskUtils:
         message = json.dumps(route_instructions.model_dump())
 
         pika_utils.publish_message(
-            exchange_name='task_routing',
+            exchange_name='task_routing_exchange',
             routing_key=completed_task_service_id,
             message=message.encode()
         )

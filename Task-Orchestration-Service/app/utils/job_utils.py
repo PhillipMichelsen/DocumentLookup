@@ -1,9 +1,8 @@
 import yaml
-from typing import List, Optional
 
 from app.schemas.job_schemas import JobSchema, JobsSchema
-from app.utils.task_utils import task_utils
 from app.utils.redis_utils import job_redis
+from app.utils.task_utils import task_utils
 
 
 class JobUtils:
@@ -22,7 +21,8 @@ class JobUtils:
             for job_name, job_config in config['jobs'].items():
                 self.jobs[job_name] = JobsSchema.model_validate(job_config)
 
-    def create_job(self, job_name: str, job_id: str, initial_request_content: str, requesting_service_id: str) -> JobSchema:
+    def create_job(self, job_name: str, job_id: str, initial_request_content: str,
+                   requesting_service_id: str) -> JobSchema:
         """Creates a job
 
         :param job_name: Name of job
