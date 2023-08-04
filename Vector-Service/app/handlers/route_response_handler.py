@@ -3,6 +3,7 @@ import json
 from app.schemas.task_schemas import TaskRequest, TaskRouteResponse
 from app.utils.pika_utils import pika_utils
 from app.utils.response_hold_utils import response_hold
+from app.config import settings
 
 
 def handle_route_response(decoded_message_body):
@@ -12,7 +13,8 @@ def handle_route_response(decoded_message_body):
 
     task_request = TaskRequest(
         task_id=request.next_task_id,
-        request_content=stashed_response.model_dump()
+        job_id=request.job_id,
+        request_content=json.dumps(stashed_response.model_dump())
     )
 
     message = json.dumps(task_request.model_dump())

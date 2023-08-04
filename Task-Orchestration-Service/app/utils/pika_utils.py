@@ -98,7 +98,8 @@ class PikaUtils:
             routing_key=routing_key,
             body=message
         )
-
+        print(f"Message published to {exchange_name} with routing key {routing_key}", flush=True)
+        print(f"Message: {message}", flush=True)
     def start_consuming(self) -> None:
         """Starts consuming messages from the registered consumers.
 

@@ -18,9 +18,9 @@ class Settings(BaseSettings):
     service_exchange: str = "vector_exchange"
 
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
-    task_orchestrator_exchange_route_request_routing_key: str = "task_route_request"
+    task_orchestrator_exchange_route_request_routing_key: str = "task_response"
 
-    # Queue Names + Routing Keys\
+    # Queue Names + Routing Keys
     vector_exchange_embed_queue: str = "vector_queue_embed"
     vector_exchange_embed_routing_key: str = "embed_text"
 

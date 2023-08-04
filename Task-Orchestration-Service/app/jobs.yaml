@@ -14,7 +14,7 @@ jobs:
   embed_text:
     tasks:
       - "generate_embeddings"
-      - "store_embeddings_milvus"
+      - "RETURN"
       - "END"
 
   answer_question:

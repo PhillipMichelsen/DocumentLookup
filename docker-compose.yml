@@ -3,7 +3,7 @@ version: '3.8'
 
 services:
   api-gateway-core:
-    build: ./Gateway-Service
+    build: ./API-Gateway
     container_name: api-gateway-core-service
     ports:
       - "8000:8000"

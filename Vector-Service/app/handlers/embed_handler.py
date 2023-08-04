@@ -10,6 +10,7 @@ from app.config import settings
 
 def handle_embed(decoded_message_body):
     request = TaskRequest.model_validate(decoded_message_body)
+    print(f'New embed request : {request}')
     embed_request = EmbedRequest.model_validate(json.loads(request.request_content))
 
     embeddings = generate_embeddings(embed_request.sentences)
@@ -29,5 +30,5 @@ def handle_embed(decoded_message_body):
     pika_utils.publish_message(
         exchange_name=settings.task_orchestrator_exchange,
         routing_key=settings.task_orchestrator_exchange_route_request_routing_key,
-        message=message.encode()
+        message=message.encode('utf-8')
     )

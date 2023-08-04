@@ -25,9 +25,7 @@ class JobRedis:
         :param job: The job to create
         :return: None
         """
-        print(job.model_dump(), flush=True)
         self.redis.hset(job.job_id, mapping=job.model_dump())
-        print('stored job', flush=True)
 
     def update_task_index(self, job_id: str, task_index: int) -> None:
         """Updates the task index of a job
@@ -85,9 +83,7 @@ class TaskRedis:
         :param task: The task to create
         :return: None
         """
-        print(task.model_dump(), flush=True)
         self.redis.hset(task.task_id, mapping=task.model_dump())
-        print('stored task', flush=True)
 
     def update_task_status(self, task_id: str, status: str) -> None:
         """Updates the status of a task

@@ -57,9 +57,8 @@ class JobUtils:
         :param job_id: ID of job
         :return: None
         """
-        job = job_redis.get_job(job_id)
-        job.current_task_index += 1
-        job_redis.store_job(job)
+        job = job_redis.get_stored_job(job_id)
+        job_redis.update_task_index(job_id, job.current_task_index + 1)
 
     @staticmethod
     def step_down_task_index(job_id: str) -> None:

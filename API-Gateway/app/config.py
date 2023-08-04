@@ -16,8 +16,8 @@ class Settings(BaseSettings):
 
     service_exchange: str = "gateway_exchange"
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
-    task_orchestrator_request_queue: str = "task_request_queue"
-    task_orchestrator_request_routing_key: str = "task_request"
+    task_orchestrator_request_queue: str = "job_request_queue"
+    task_orchestrator_request_routing_key: str = "job_request"
 
 
 # Create instances

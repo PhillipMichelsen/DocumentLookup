@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.listeners.job_response_listener import response_callback
+from app.listeners.job_response_listener import job_response_callback
 from app.routers import core_tasks
 from app.utils.pika_utils import pika_helper
 
@@ -41,7 +41,7 @@ async def startup():
         task_request_routing_key=settings.task_orchestrator_request_routing_key
     )
 
-    await pika_helper.response_queue.consume(response_callback)
+    await pika_helper.response_queue.consume(job_response_callback)
 
 
 # Root Route

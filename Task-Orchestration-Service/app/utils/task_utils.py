@@ -66,15 +66,6 @@ class TaskUtils:
 
         job_redis.delete_job(job.job_id)
 
-    def send_task(self, task: TaskSchema, message_content: str) -> None:
-        task_attributes = self.tasks[task.task_name]
-
-        pika_utils.publish_message(
-            exchange_name=task_attributes.exchange,
-            routing_key=task_attributes.routing_key,
-            message=message_content.encode()
-        )
-
     @staticmethod
     def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema,
                                        completed_task_service_id: str) -> None:

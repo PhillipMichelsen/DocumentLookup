@@ -11,5 +11,6 @@ class JobRequest(BaseModel):
 
 
 class JobResponse(BaseModel):
+    task_id: str
     job_id: str
-    return_content: str
+    request_content: str
