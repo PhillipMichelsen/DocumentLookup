@@ -25,7 +25,6 @@ def handle_embed(decoded_message_body):
     )
 
     message = json.dumps(route_request.model_dump())
-    print(embed_response, flush=True)
 
     pika_utils.publish_message(
         exchange_name=settings.task_orchestrator_exchange,

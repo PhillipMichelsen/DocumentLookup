@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.listeners.response_listener import response_callback
+from app.listeners.job_response_listener import response_callback
 from app.routers import core_tasks
 from app.utils.pika_utils import pika_helper
 
