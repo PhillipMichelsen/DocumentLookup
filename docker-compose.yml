@@ -4,7 +4,7 @@ version: '3.8'
 services:
   api-gateway-core:
     build: ./API-Gateway
-    container_name: api-gateway-core-service
+    #container_name: api-gateway-core-service
     ports:
       - "8000:8000"
     depends_on:
@@ -12,14 +12,18 @@ services:
 
   task-orchestration-service-core:
     build: ./Task-Orchestration-Service
-    container_name: task-orchestration-core-service
+    #container_name: task-orchestration-core-service
+    deploy:
+        replicas: 2
     depends_on:
       - rabbitmq
       - redis
 
   vector-service-core:
     build: ./Vector-Service
-    container_name: vector-core-service
+    #container_name: vector-core-service
+    deploy:
+      replicas: 2
     depends_on:
       - rabbitmq
 

@@ -13,13 +13,15 @@ class Settings(BaseSettings):
     rabbitmq_password: str = "admin123"
 
     service_exchange: str = "task_orchestrator_exchange"
-    gateway_exchange: str = "gateway_exchange"
+
+    job_request_queue: str = "job_request_queue"
+    job_request_queue_routing_key: str = "job_request"
 
     task_response_queue: str = "task_response_queue"
     task_response_queue_routing_key: str = "task_response"
 
-    job_request_queue: str = "job_request_queue"
-    job_request_queue_routing_key: str = "job_request"
+    task_route_response_queue: str = "task_route_response_queue"
+    task_route_response_queue_routing_key: str = "task_route_response"
 
     # --- Redis settings ---
     redis_host: str = "redis-service"

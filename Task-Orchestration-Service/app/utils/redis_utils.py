@@ -1,5 +1,4 @@
 import redis
-import json
 
 from app.schemas.job_schemas import JobSchema
 from app.schemas.task_schemas import TaskSchema

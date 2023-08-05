@@ -4,7 +4,7 @@ import uuid
 import yaml
 
 from app.config import settings
-from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteResponse
+from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteRequest
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import task_redis, job_redis
 
@@ -43,7 +43,7 @@ class TaskUtils:
     def return_task(task: TaskSchema) -> None:
         job = job_redis.get_job(task.job_id)
 
-        route_request = TaskRouteResponse(
+        route_request = TaskRouteRequest(
             task_id=task.task_id,
             exchange=task.return_exchange,
             routing_key=task.return_routing_key
@@ -72,7 +72,7 @@ class TaskUtils:
         completed_task_attributes = task_utils.tasks[completed_task.task_name]
         new_task_attributes = task_utils.tasks[new_task.task_name]
 
-        route_instructions = TaskRouteResponse(
+        route_instructions = TaskRouteRequest(
             task_id=completed_task.task_id,
             next_task_id=new_task.task_id,
             exchange=new_task_attributes.exchange,

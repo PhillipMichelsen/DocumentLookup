@@ -8,6 +8,7 @@ class Settings(BaseSettings):
 
     # --- Core service settings ---
     service_name: str = "gateway_service"
+    exchanges_file: str = "app/exchanges.yaml"
 
     # --- RabbitMQ settings ---
     rabbitmq_host: str = "rabbitmq-service"
@@ -16,8 +17,9 @@ class Settings(BaseSettings):
 
     service_exchange: str = "gateway_exchange"
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
-    task_orchestrator_request_queue: str = "job_request_queue"
-    task_orchestrator_request_routing_key: str = "job_request"
+
+    task_orchestrator_job_request_queue: str = "job_request_queue"
+    task_orchestrator_job_request_routing_key: str = "job_request"
 
 
 # Create instances

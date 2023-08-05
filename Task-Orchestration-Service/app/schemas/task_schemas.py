@@ -17,7 +17,7 @@ class TasksSchema(BaseModel):
     routing_key: Optional[str] = None
 
 
-class TaskRouteResponse(BaseModel):
+class TaskRouteRequest(BaseModel):
     task_id: str
     next_task_id: str
     job_id: str
@@ -25,7 +25,14 @@ class TaskRouteResponse(BaseModel):
     routing_key: str
 
 
-class TaskRouteRequest(BaseModel):
+class TaskRouteResponse(BaseModel):
+    task_id: str
+    new_task_id: str
+    service_id: str
+    status: str
+
+
+class TaskResponse(BaseModel):
     task_id: str
     service_id: str
     status: str

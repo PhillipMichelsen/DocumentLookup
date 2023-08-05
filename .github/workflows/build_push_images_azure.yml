@@ -2,8 +2,8 @@ name: Build and Push Docker Images to Azure Container Registry
 
 on:
   pull_request:
-    types: [closed]
-    branches: 
+    types: [ closed ]
+    branches:
       - main
   workflow_dispatch:
 
@@ -13,33 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: Login to Azure Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: documentlookup.azurecr.io
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: documentlookup.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Build and push API Gateway
-      uses: docker/build-push-action@v2
-      with:
-        context: ./API-Gateway
-        push: true
-        tags: documentlookup.azurecr.io/api-gateway-core:${{ github.sha }}
+      - name: Build and push API Gateway
+        uses: docker/build-push-action@v2
+        with:
+          context: ./API-Gateway
+          push: true
+          tags: documentlookup.azurecr.io/api-gateway-core:${{ github.sha }}
 
-    - name: Build and push Task Orchestration Service
-      uses: docker/build-push-action@v2
-      with:
-        context: ./Task-Orchestration-Service
-        push: true
-        tags: documentlookup.azurecr.io/task-orchestration-service-core:${{ github.sha }}
+      - name: Build and push Task Orchestration Service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Task-Orchestration-Service
+          push: true
+          tags: documentlookup.azurecr.io/task-orchestration-service-core:${{ github.sha }}
 
-    - name: Build and push Vector Service
-      uses: docker/build-push-action@v2
-      with:
-        context: ./Vector-Service
-        push: true
-        tags: documentlookup.azurecr.io/vector-service-core:${{ github.sha }}
+      - name: Build and push Vector Service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Vector-Service
+          push: true
+          tags: documentlookup.azurecr.io/vector-service-core:${{ github.sha }}

@@ -60,7 +60,7 @@ class PikaUtils:
             if exchange['name'] == settings.service_exchange:
                 self.service_exchange = exchange['name']
 
-    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback, exchange: str = None) -> None:
+    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback, exchange: str = None, auto_delete: str = False) -> None:
         """Registers a queue and consumes messages from it
 
         :param on_message_callback:
@@ -72,7 +72,7 @@ class PikaUtils:
         self.channel.queue_declare(
             queue=queue_name,
             durable=False,
-            auto_delete=False
+            auto_delete=auto_delete
         )
 
         self.channel.queue_bind(
@@ -99,8 +99,6 @@ class PikaUtils:
             routing_key=routing_key,
             body=message
         )
-        print(f"Published message to {exchange_name} with routing key {routing_key}", flush=True)
-        print(f"Message: {message}", flush=True)
 
     def start_consuming(self) -> None:
         """Starts consuming messages from the registered consumers.

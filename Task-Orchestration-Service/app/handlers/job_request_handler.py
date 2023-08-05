@@ -3,8 +3,8 @@ import json
 from app.schemas.job_schemas import JobRequest
 from app.schemas.task_schemas import TaskRequest
 from app.utils.job_utils import job_utils
-from app.utils.redis_utils import task_redis
 from app.utils.pika_utils import pika_utils
+from app.utils.redis_utils import task_redis
 from app.utils.task_utils import task_utils
 
 
@@ -35,5 +35,3 @@ def handle_job_request(decoded_message_body):
         routing_key=task_attributes.routing_key,
         message=message.encode()
     )
-
-

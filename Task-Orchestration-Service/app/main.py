@@ -1,6 +1,7 @@
 from app.config import settings
 from app.listeners.job_request_listener import job_request_callback
 from app.listeners.task_response_listener import task_response_callback
+from app.listeners.task_route_response_listener import task_route_response_callback
 from app.utils.job_utils import job_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
@@ -32,7 +33,10 @@ def initialize():
 
 
 initialize()
-pika_utils.register_consumer(settings.task_response_queue, settings.task_response_queue_routing_key, task_response_callback)
+pika_utils.register_consumer(settings.task_response_queue, settings.task_response_queue_routing_key,
+                             task_response_callback)
 pika_utils.register_consumer(settings.job_request_queue, settings.job_request_queue_routing_key, job_request_callback)
+pika_utils.register_consumer(settings.task_route_response_queue, settings.task_route_response_queue_routing_key,
+                             task_route_response_callback)
 
 pika_utils.start_consuming()
