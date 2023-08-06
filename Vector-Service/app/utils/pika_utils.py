@@ -24,6 +24,7 @@ class PikaUtils:
 
         :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
+
         try:
             self.connection = pika.BlockingConnection(pika.ConnectionParameters(
                 host=settings.rabbitmq_host,
@@ -45,6 +46,7 @@ class PikaUtils:
         :param exchanges_file: The path to the YAML file
         :return: None
         """
+
         with open(exchanges_file) as f:
             data = yaml.safe_load(f)
             exchanges = data['exchanges'].values()
@@ -60,7 +62,7 @@ class PikaUtils:
             if exchange['name'] == settings.service_exchange:
                 self.service_exchange = exchange['name']
 
-    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback, exchange: str = None, auto_delete: str = False) -> None:
+    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback, exchange: str = None, auto_delete: bool = False) -> None:
         """Registers a queue and consumes messages from it
 
         :param on_message_callback:
@@ -69,6 +71,7 @@ class PikaUtils:
         :param exchange: The exchange to bind the queue to
         :return: None
         """
+
         self.channel.queue_declare(
             queue=queue_name,
             durable=False,
@@ -94,6 +97,7 @@ class PikaUtils:
         :param message: The message to publish
         :return: None
         """
+
         self.channel.basic_publish(
             exchange=exchange_name,
             routing_key=routing_key,
@@ -105,6 +109,7 @@ class PikaUtils:
 
         :return: None
         """
+
         print(f"Service {self.service_id} is listening for messages...", flush=True)
         self.channel.start_consuming()
 

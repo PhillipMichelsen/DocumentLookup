@@ -22,12 +22,14 @@ async def route_upload_file(request: embed_text_schemas.TaskEmbedTextRequest):
 
     job = JobRequest(
         job_name="embed_text",
+        requesting_service_exchange=settings.service_exchange,
+        requesting_service_return_queue_routing_key=settings.update_result_queue_routing_key,
         requesting_service_id=pika_utils.service_id,
         job_id=job_id,
         initial_request_content=json.dumps(request.model_dump())
     )
 
-    response_future = await response_utils.create_response(job_id)
+    task_result_response_future = await response_utils.create_response(job_id)
 
     message = json.dumps(job.model_dump())
 
@@ -37,7 +39,11 @@ async def route_upload_file(request: embed_text_schemas.TaskEmbedTextRequest):
         message=message.encode('utf-8')
     )
 
-    response = await response_future
+    return_task_id = await task_result_response_future
+
+    job_response_future = await response_utils.create_response(return_task_id)
+
+    response = await job_response_future
 
     return embed_text_schemas.TaskEmbedTextResponse.model_validate(json.loads(response))
 

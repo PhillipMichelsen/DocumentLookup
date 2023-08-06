@@ -14,7 +14,7 @@ services:
     build: ./Task-Orchestration-Service
     #container_name: task-orchestration-core-service
     deploy:
-        replicas: 2
+        replicas: 1
     depends_on:
       - rabbitmq
       - redis
@@ -23,7 +23,7 @@ services:
     build: ./Vector-Service
     #container_name: vector-core-service
     deploy:
-      replicas: 2
+      replicas: 1
     depends_on:
       - rabbitmq
 

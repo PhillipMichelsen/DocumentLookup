@@ -15,6 +15,7 @@ def generate_cross_encoding(query: str, sentences: List[str]) -> List[Tuple[str,
     :param sentences: The list of sentences to be cross-encoded.
     :return: A list of tuples (sentence, score) where score is the cross-encoding score of the sentence.
     """
+
     query_sentence_pairs = [[query, sentence] for sentence in sentences]
 
     scores = cross_embedding_model.predict(query_sentence_pairs)
@@ -28,6 +29,7 @@ def rerank(pairs: List[Tuple[str, float]]) -> Tuple[List[str], List[float]]:
     :param pairs: A list of tuples (sentence, score) where score is the cross-encoding score of the sentence.
     :return: A tuple of two lists: (sentences, scores) where scores are in descending order.
     """
+
     sorted_pairs = sorted(pairs, key=lambda pair: pair[1], reverse=True)
     sentences_ranked, scores_ranked = zip(*sorted_pairs)
 

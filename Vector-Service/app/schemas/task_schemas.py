@@ -27,7 +27,7 @@ class TaskRouteRequest(BaseModel):
 
 class TaskRouteResponse(BaseModel):
     task_id: str
-    new_task_id: str
+    next_task_id: str
     service_id: str
     status: str
 

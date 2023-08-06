@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     task_route_response_queue: str = "task_route_response_queue"
     task_route_response_queue_routing_key: str = "task_route_response"
 
+    gateway_exchange: str = "gateway_exchange"
+    task_routing_exchange: str = "task_routing_exchange"
+
     # --- Redis settings ---
     redis_host: str = "redis-service"
     redis_port: int = 6379

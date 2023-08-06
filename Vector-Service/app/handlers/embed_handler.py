@@ -9,17 +9,17 @@ from app.utils.response_hold_utils import response_hold
 
 
 def handle_embed(decoded_message_body):
-    request = TaskRequest.model_validate(decoded_message_body)
-    embed_request = EmbedRequest.model_validate(json.loads(request.request_content))
+    task_request = TaskRequest.model_validate(decoded_message_body)
+    embed_request = EmbedRequest.model_validate(json.loads(task_request.request_content))
 
     embeddings = generate_embeddings(embed_request.sentences)
 
     embed_response = EmbedResponse(embedding=embeddings)
 
-    response_hold.stash_response(request.task_id, embed_response)
+    response_hold.stash_response(task_request.task_id, embed_response)
 
     task_response = TaskResponse(
-        task_id=request.task_id,
+        task_id=task_request.task_id,
         service_id=pika_utils.service_id,
         status='COMPLETED'
     )

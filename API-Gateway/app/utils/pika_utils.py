@@ -18,6 +18,7 @@ class PikaUtilsAsync:
             host=host,
             login=username,
             password=password,
+            timeout=10
         )
         self.channel = await self.connection.channel()
 
@@ -43,7 +44,7 @@ class PikaUtilsAsync:
         queue = await self.channel.declare_queue(
             name=queue_name,
             durable=False,
-            auto_delete=False
+            auto_delete=True
         )
         await queue.bind(self.service_exchange, routing_key=routing_key)
         await queue.consume(on_message_callback)

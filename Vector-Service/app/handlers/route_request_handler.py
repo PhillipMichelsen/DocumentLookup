@@ -17,18 +17,18 @@ def handle_route_request(decoded_message_body):
         request_content=json.dumps(stashed_response.model_dump())
     )
 
+    task_route_response = TaskRouteResponse(
+        task_id=task_route_request.task_id,
+        next_task_id=task_route_request.next_task_id,
+        service_id=pika_utils.service_id,
+        status='COMPLETED'
+    )
+
     message = json.dumps(task_request.model_dump())
     pika_utils.publish_message(
         exchange_name=task_route_request.exchange,
         routing_key=task_route_request.routing_key,
         message=message.encode('utf-8')
-    )
-
-    task_route_response = TaskRouteResponse(
-        task_id=task_route_request.task_id,
-        new_task_id=task_route_request.next_task_id,
-        service_id=pika_utils.service_id,
-        status='COMPLETED'
     )
 
     message = json.dumps(task_route_response.model_dump())

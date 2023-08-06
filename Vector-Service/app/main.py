@@ -12,12 +12,25 @@ pika_utils.init_connection(
 )
 pika_utils.declare_exchanges('app/exchanges.yaml')
 
-pika_utils.register_consumer(settings.vector_exchange_embed_queue, settings.vector_exchange_embed_routing_key,
-                             on_message_embed)
-pika_utils.register_consumer(settings.vector_exchange_rerank_queue, settings.vector_exchange_rerank_routing_key,
-                             on_message_rerank)
-pika_utils.register_consumer(pika_utils.service_id, pika_utils.service_id, on_message_route_request,
-                             'task_routing_exchange', True)
+pika_utils.register_consumer(
+    settings.vector_exchange_embed_queue,
+    settings.vector_exchange_embed_routing_key,
+    on_message_embed
+)
+
+pika_utils.register_consumer(
+    settings.vector_exchange_rerank_queue,
+    settings.vector_exchange_rerank_routing_key,
+    on_message_rerank
+)
+
+pika_utils.register_consumer(
+    pika_utils.service_id,
+    pika_utils.service_id,
+    on_message_route_request,
+    'task_routing_exchange',
+    True
+)
 
 # Start consuming messages
 pika_utils.start_consuming()

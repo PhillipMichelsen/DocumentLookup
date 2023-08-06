@@ -5,6 +5,7 @@ import yaml
 
 from app.config import settings
 from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteRequest
+from app.schemas.job_schemas import JobSchema
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import task_redis, job_redis
 
@@ -39,32 +40,51 @@ class TaskUtils:
 
         return task_id
 
-    @staticmethod
-    def return_task(task: TaskSchema) -> None:
-        job = job_redis.get_job(task.job_id)
+    def determine_task_type(self, task: TaskSchema) -> str:
+        """Determines the type of task
 
-        route_request = TaskRouteRequest(
-            task_id=task.task_id,
-            exchange=task.return_exchange,
-            routing_key=task.return_routing_key
+        :param task: Task
+        :return: Type of task
+        """
+
+        task_attributes = self.tasks[task.task_name]
+        return task_attributes.task_type
+
+    def route_process_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema, requesting_service_id: str) -> None:
+        next_task_attributes = self.tasks[next_task.task_name]
+
+        task_route_request = TaskRouteRequest(
+            task_id=completed_task.task_id,
+            next_task_id=next_task.task_id,
+            job_id=job.job_id,
+            exchange=next_task_attributes.exchange,
+            routing_key=next_task_attributes.routing_key
         )
 
-        message = json.dumps(route_request.model_dump())
-
+        message = json.dumps(task_route_request.model_dump())
         pika_utils.publish_message(
-            exchange_name=settings.gateway_exchange,
-            routing_key=job.return_routing_key,
-            message=message.encode()
+            exchange_name=settings.task_routing_exchange,
+            routing_key=requesting_service_id,
+            message=message.encode('utf-8')
         )
 
-    @staticmethod
-    def end_task(task: TaskSchema) -> None:
-        job = job_redis.get_job(task.job_id)
+    def route_return_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema, requesting_service_id: str) -> None:
+        next_task_attributes = self.tasks[next_task.task_name]
 
-        for task in job.task_chain.split(','):
-            task_redis.delete_task(task)
+        task_route_request = TaskRouteRequest(
+            task_id=completed_task.task_id,
+            next_task_id=next_task.task_id,
+            job_id=job.job_id,
+            exchange=job.requesting_service_exchange,
+            routing_key=f'{job.requesting_service_id}_{job.requesting_service_return_queue_routing_key}'
+        )
 
-        job_redis.delete_job(job.job_id)
+        message = json.dumps(task_route_request.model_dump())
+        pika_utils.publish_message(
+            exchange_name=settings.task_routing_exchange,
+            routing_key=requesting_service_id,
+            message=message.encode('utf-8')
+        )
 
     @staticmethod
     def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema,
