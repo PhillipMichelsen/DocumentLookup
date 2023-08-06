@@ -9,6 +9,7 @@ from app.utils.task_utils import task_utils
 
 def handle_task_response(decoded_message_body):
     task_response = TaskResponse.model_validate(decoded_message_body)
+    print(f"Task response received: {task_response}", flush=True)
 
     completed_task = task_redis.get_stored_task(task_response.task_id)
 

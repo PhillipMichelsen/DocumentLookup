@@ -24,7 +24,6 @@ class PikaUtils:
 
         :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
-
         try:
             self.connection = pika.BlockingConnection(pika.ConnectionParameters(
                 host=settings.rabbitmq_host,
@@ -46,7 +45,6 @@ class PikaUtils:
         :param exchanges_file: The path to the YAML file
         :return: None
         """
-
         with open(exchanges_file) as f:
             data = yaml.safe_load(f)
             exchanges = data['exchanges'].values()
@@ -62,23 +60,25 @@ class PikaUtils:
             if exchange['name'] == settings.service_exchange:
                 self.service_exchange = exchange['name']
 
-    def register_consumer(self, queue_name: str, routing_key: str, on_message_callback) -> None:
+    def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback, auto_delete: bool) -> None:
         """Registers a queue and consumes messages from it
 
-        :param on_message_callback:
         :param queue_name: The name of the queue
+        :param exchange: The name of the exchange
         :param routing_key: The routing key
+        :param on_message_callback: The callback function to be called when a message is received
+        :param auto_delete: Whether the queue should be deleted when the connection is closed
         :return: None
         """
 
         self.channel.queue_declare(
             queue=queue_name,
             durable=False,
-            auto_delete=False
+            auto_delete=auto_delete
         )
 
         self.channel.queue_bind(
-            exchange=self.service_exchange,
+            exchange=exchange,
             queue=queue_name,
             routing_key=routing_key
         )
@@ -96,19 +96,19 @@ class PikaUtils:
         :param message: The message to publish
         :return: None
         """
-
         self.channel.basic_publish(
             exchange=exchange_name,
             routing_key=routing_key,
             body=message
         )
+        print(f"Message published to exchange {exchange_name} with routing key {routing_key}, content: {message}",
+              flush=True)
 
     def start_consuming(self) -> None:
         """Starts consuming messages from the registered consumers.
 
         :return: None
         """
-
         print(f"Service {self.service_id} is listening for messages...", flush=True)
         self.channel.start_consuming()
 

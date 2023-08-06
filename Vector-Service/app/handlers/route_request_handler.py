@@ -8,6 +8,7 @@ from app.utils.response_hold_utils import response_hold
 
 def handle_route_request(decoded_message_body):
     task_route_request = TaskRouteRequest.model_validate(decoded_message_body)
+    print(f'Route request received: {task_route_request}', flush=True)
 
     stashed_response = response_hold.get_response(task_route_request.task_id)
 

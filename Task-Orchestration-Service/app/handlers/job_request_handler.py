@@ -6,10 +6,12 @@ from app.utils.job_utils import job_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import task_redis
 from app.utils.task_utils import task_utils
+from app.config import settings
 
 
 def handle_job_request(decoded_message_body):
     job_request = JobRequest.model_validate(decoded_message_body)
+    print(f'Job request received: {job_request.model_dump()}', flush=True)
 
     job = job_utils.create_job(
         job_name=job_request.job_name,
@@ -40,13 +42,15 @@ def handle_job_request(decoded_message_body):
         status='CREATED'
     )
 
+    # Notify the requesting service that the job has been created along with the return task id
     message = json.dumps(job_response.model_dump())
     pika_utils.publish_message(
         exchange_name=job.requesting_service_exchange,
-        routing_key=f'{job_request.requesting_service_id}_job_response',
+        routing_key=f'{job_request.requesting_service_id}_{settings.job_response_queue_routing_key}',
         message=message.encode('utf-8')
     )
 
+    # Start the job by sending the first task to the executing service
     message = json.dumps(task_request.model_dump())
     pika_utils.publish_message(
         exchange_name=task_attributes.exchange,

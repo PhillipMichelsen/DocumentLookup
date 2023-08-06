@@ -26,24 +26,30 @@ app.add_middleware(
 # Startup event
 @app.on_event("startup")
 async def startup():
+    # Prepare pika connection and declare exchanges
     await pika_utils.init_connection(
         host=settings.rabbitmq_host,
         username=settings.rabbitmq_username,
         password=settings.rabbitmq_password
     )
-
     await pika_utils.declare_exchanges(settings.exchanges_file)
 
+    # Register consumer for job response
     await pika_utils.register_consumer(
-        f'{pika_utils.service_id}_{settings.job_response_queue}',
-        f'{pika_utils.service_id}_{settings.job_response_queue_routing_key}',
-        job_response_callback
+        queue_name=f'{pika_utils.service_id}_{settings.job_response_queue}',
+        exchange=settings.service_exchange,
+        routing_key=f'{pika_utils.service_id}_{settings.job_response_queue_routing_key}',
+        on_message_callback=job_response_callback,
+        auto_delete=True
     )
 
+    # Register consumer for update result
     await pika_utils.register_consumer(
-        f'{pika_utils.service_id}_{settings.update_result_queue}',
-        f'{pika_utils.service_id}_{settings.update_result_queue_routing_key}',
-        update_result_callback
+        queue_name=f'{pika_utils.service_id}_{settings.update_result_queue}',
+        exchange=settings.service_exchange,
+        routing_key=f'{pika_utils.service_id}_{settings.update_result_queue_routing_key}',
+        on_message_callback=update_result_callback,
+        auto_delete=True
     )
 
     print(f"Service {pika_utils.service_id} is listening for messages...")

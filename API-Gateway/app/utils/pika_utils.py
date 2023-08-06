@@ -40,13 +40,13 @@ class PikaUtilsAsync:
                 auto_delete=exchange.get('auto_delete', False)
             )
 
-    async def register_consumer(self, queue_name: str, routing_key: str, on_message_callback):
+    async def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback, auto_delete: bool) -> None:
         queue = await self.channel.declare_queue(
             name=queue_name,
             durable=False,
-            auto_delete=True
+            auto_delete=auto_delete
         )
-        await queue.bind(self.service_exchange, routing_key=routing_key)
+        await queue.bind(exchange, routing_key=routing_key)
         await queue.consume(on_message_callback)
 
     async def publish_message(self, exchange_name: str, routing_key: str, message: bytes):
@@ -57,6 +57,8 @@ class PikaUtilsAsync:
             ),
             routing_key=routing_key
         )
+        print(f"Message published to exchange {exchange_name} with routing key {routing_key}, content: {message}",
+              flush=True)
 
 
 pika_utils = PikaUtilsAsync()

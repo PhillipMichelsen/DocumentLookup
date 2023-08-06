@@ -10,6 +10,7 @@ from app.utils.response_hold_utils import response_hold
 
 def handle_cross_encode(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
+    print(f'Cross encode request received: {task_request.request_content}', flush=True)
     cross_encode_request = CrossEncodeRequest.model_validate(json.loads(task_request.request_content))
 
     sentence_score_pairs = generate_cross_encoding(cross_encode_request.query, cross_encode_request.sentences)

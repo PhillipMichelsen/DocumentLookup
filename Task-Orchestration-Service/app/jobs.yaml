@@ -17,6 +17,12 @@ jobs:
       - "RETURN"
       - "END"
 
+  rerank_text:
+    tasks:
+      - "rerank_text"
+      - "RETURN"
+      - "END"
+
   answer_question:
     tasks:
       - "generate_embeddings"
@@ -24,7 +30,3 @@ jobs:
       - "rerank_text"
       - "RETURN"
       - "END"
-
-  test_embed:
-    tasks:
-      - "generate_embeddings"

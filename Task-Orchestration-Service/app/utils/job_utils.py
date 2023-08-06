@@ -58,8 +58,11 @@ class JobUtils:
 
     @staticmethod
     def delete_job(job: JobSchema) -> None:
-        # clears a job and all its tasks from redis
+        """Deletes a job and all of its tasks
 
+        :param job: Job
+        :return: None
+        """
         task_chain = job.task_chain.split(',')
 
         for task_id in task_chain:
@@ -69,6 +72,11 @@ class JobUtils:
 
     @staticmethod
     def get_return_task(job: JobSchema) -> TaskSchema:
+        """Gets the return task of a job
+
+        :param job: Job
+        :return: Return task
+        """
         task_chain = job.task_chain.split(',')
         task_chain.reverse()
 

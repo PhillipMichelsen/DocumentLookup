@@ -82,13 +82,12 @@ class TaskUtils:
         message = json.dumps(task_route_request.model_dump())
         pika_utils.publish_message(
             exchange_name=settings.task_routing_exchange,
-            routing_key=requesting_service_id,
+            routing_key=f'{requesting_service_id}_{settings.route_request_queue_routing_key}',
             message=message.encode('utf-8')
         )
 
     @staticmethod
-    def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema,
-                                       completed_task_service_id: str) -> None:
+    def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema, completed_task_service_id: str) -> None:
         completed_task_attributes = task_utils.tasks[completed_task.task_name]
         new_task_attributes = task_utils.tasks[new_task.task_name]
 
@@ -102,7 +101,7 @@ class TaskUtils:
         message = json.dumps(route_instructions.model_dump())
 
         pika_utils.publish_message(
-            exchange_name='task_routing_exchange',
+            exchange_name=settings.task_routing_exchange,
             routing_key=completed_task_service_id,
             message=message.encode()
         )
