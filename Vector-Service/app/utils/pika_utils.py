@@ -46,7 +46,7 @@ class PikaUtils:
             exchanges = data['exchanges'].values()
 
         for exchange in exchanges:
-            declared_exchange = self.channel.exchange_declare(
+            self.channel.exchange_declare(
                 exchange['name'],
                 exchange['type'],
                 durable=exchange.get('durable', False),

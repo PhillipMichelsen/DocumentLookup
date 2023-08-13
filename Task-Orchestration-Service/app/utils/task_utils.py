@@ -69,7 +69,8 @@ class TaskUtils:
             message=message.encode('utf-8')
         )
 
-    def route_return_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema,
+    @staticmethod
+    def route_return_task(completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema,
                           requesting_service_id: str) -> None:
         # next_task_attributes = self.tasks[next_task.task_name]
 

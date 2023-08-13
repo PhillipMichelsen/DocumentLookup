@@ -85,6 +85,8 @@ class JobUtils:
             if task_utils.determine_task_type(task) == 'return':
                 return task
 
+        return task_redis.get_stored_task(task_chain[0])
+
     @staticmethod
     def step_up_task_index(job_id: str) -> None:
         """Steps the task index of a job

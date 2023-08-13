@@ -17,7 +17,7 @@ router = APIRouter()
              description="Embeds text given",
              response_model=embed_text_schemas.TaskEmbedTextResponse
              )
-async def route_upload_file(request: embed_text_schemas.TaskEmbedTextRequest):
+async def route_embed_text(request: embed_text_schemas.TaskEmbedTextRequest):
     job_id = str(uuid.uuid4())
 
     job = JobRequest(
@@ -53,7 +53,7 @@ async def route_upload_file(request: embed_text_schemas.TaskEmbedTextRequest):
              description="Re-ranks text given",
              response_model=rerank_text_schemas.TaskRerankTextResponse
              )
-async def route_upload_file(request: rerank_text_schemas.TaskRerankTextRequest):
+async def route_rerank_text(request: rerank_text_schemas.TaskRerankTextRequest):
     job_id = str(uuid.uuid4())
 
     job = JobRequest(
