@@ -65,7 +65,6 @@ class PikaUtils:
         :param auto_delete: Whether the queue should be deleted when the connection is closed
         :return: None
         """
-
         self.channel.queue_declare(
             queue=queue_name,
             durable=False,

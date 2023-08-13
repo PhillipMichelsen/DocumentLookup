@@ -14,9 +14,6 @@ def handle_process_file(decoded_message_body):
     process_file_request = ProcessFileRequest.model_validate(task_request.request_content)
 
     object_name = process_file_request.Records[0]['s3']['object']['key']
-    # bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
-    # event_name = process_file_request.Records[0]['eventName']
-    # original_filename = process_file_request.Records[0]['s3']['object']['userMetadata']['X-Amz-Meta-Original-Filename']
     presigned_url_download = minio_utils.generate_download_url('test', object_name)
 
     grobid_output = grobid_fulltext_pdf(presigned_url_download)

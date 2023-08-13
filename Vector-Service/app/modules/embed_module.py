@@ -13,6 +13,5 @@ def generate_embeddings(sentences: List[str]) -> List[List[float]]:
     :param sentences: Sentences to generate embedding for
     :return: List of embeddings
     """
-
     embeddings = embedding_model.encode(sentences)
     return embeddings.tolist()

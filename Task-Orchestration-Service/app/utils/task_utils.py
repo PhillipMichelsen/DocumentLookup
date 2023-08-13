@@ -46,7 +46,6 @@ class TaskUtils:
         :param task: Task
         :return: Type of task
         """
-
         task_attributes = self.tasks[task.task_name]
         return task_attributes.task_type
 
@@ -72,7 +71,6 @@ class TaskUtils:
     @staticmethod
     def route_return_task(completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema,
                           requesting_service_id: str) -> None:
-        # next_task_attributes = self.tasks[next_task.task_name]
 
         task_route_request = TaskRouteRequest(
             task_id=completed_task.task_id,
@@ -92,7 +90,6 @@ class TaskUtils:
     @staticmethod
     def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema,
                                        completed_task_service_id: str) -> None:
-        # completed_task_attributes = task_utils.tasks[completed_task.task_name]
         new_task_attributes = task_utils.tasks[new_task.task_name]
 
         route_instructions = TaskRouteRequest(

@@ -24,7 +24,6 @@ class PikaUtils:
 
         :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
-
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
             host=host,
             port=5672,
@@ -42,7 +41,6 @@ class PikaUtils:
         :param exchanges_file: The path to the YAML file
         :return: None
         """
-
         with open(exchanges_file) as f:
             data = yaml.safe_load(f)
             exchanges = data['exchanges'].values()
@@ -70,7 +68,6 @@ class PikaUtils:
         :param auto_delete: Whether the queue should be deleted when the consumer disconnects
         :return: None
         """
-
         self.channel.queue_declare(
             queue=queue_name,
             durable=False,
@@ -96,7 +93,6 @@ class PikaUtils:
         :param message: The message to publish
         :return: None
         """
-
         self.channel.basic_publish(
             exchange=exchange_name,
             routing_key=routing_key,
@@ -110,7 +106,6 @@ class PikaUtils:
 
         :return: None
         """
-
         print(f"Service {self.service_id} is listening for messages...", flush=True)
         self.channel.start_consuming()
 
