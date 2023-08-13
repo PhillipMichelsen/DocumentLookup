@@ -4,10 +4,10 @@ import uuid
 import yaml
 
 from app.config import settings
-from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteRequest
 from app.schemas.job_schemas import JobSchema
+from app.schemas.task_schemas import TasksSchema, TaskSchema, TaskRouteRequest
 from app.utils.pika_utils import pika_utils
-from app.utils.redis_utils import task_redis, job_redis
+from app.utils.redis_utils import task_redis
 
 
 class TaskUtils:
@@ -50,7 +50,8 @@ class TaskUtils:
         task_attributes = self.tasks[task.task_name]
         return task_attributes.task_type
 
-    def route_process_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema, requesting_service_id: str) -> None:
+    def route_process_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema,
+                           requesting_service_id: str) -> None:
         next_task_attributes = self.tasks[next_task.task_name]
 
         task_route_request = TaskRouteRequest(
@@ -68,8 +69,9 @@ class TaskUtils:
             message=message.encode('utf-8')
         )
 
-    def route_return_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema, requesting_service_id: str) -> None:
-        next_task_attributes = self.tasks[next_task.task_name]
+    def route_return_task(self, completed_task: TaskSchema, next_task: TaskSchema, job: JobSchema,
+                          requesting_service_id: str) -> None:
+        # next_task_attributes = self.tasks[next_task.task_name]
 
         task_route_request = TaskRouteRequest(
             task_id=completed_task.task_id,
@@ -87,8 +89,9 @@ class TaskUtils:
         )
 
     @staticmethod
-    def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema, completed_task_service_id: str) -> None:
-        completed_task_attributes = task_utils.tasks[completed_task.task_name]
+    def send_task_routing_instructions(completed_task: TaskSchema, new_task: TaskSchema,
+                                       completed_task_service_id: str) -> None:
+        # completed_task_attributes = task_utils.tasks[completed_task.task_name]
         new_task_attributes = task_utils.tasks[new_task.task_name]
 
         route_instructions = TaskRouteRequest(

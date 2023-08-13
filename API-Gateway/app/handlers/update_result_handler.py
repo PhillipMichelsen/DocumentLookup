@@ -1,8 +1,9 @@
-from app.schemas.task_schemas import TaskRequest, TaskResponse
-from app.utils.response_utils import response_utils
-from app.utils.pika_utils import pika_utils
-from app.config import settings
 import json
+
+from app.config import settings
+from app.schemas.task_schemas import TaskRequest, TaskResponse
+from app.utils.pika_utils import pika_utils
+from app.utils.response_utils import response_utils
 
 
 async def handle_update_result(decoded_message_body):

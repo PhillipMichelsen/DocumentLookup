@@ -40,7 +40,8 @@ class PikaUtilsAsync:
                 auto_delete=exchange.get('auto_delete', False)
             )
 
-    async def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback, auto_delete: bool) -> None:
+    async def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback,
+                                auto_delete: bool) -> None:
         queue = await self.channel.declare_queue(
             name=queue_name,
             durable=False,

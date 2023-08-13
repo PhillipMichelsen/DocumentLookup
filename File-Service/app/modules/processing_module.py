@@ -1,8 +1,8 @@
-import httpx
-import re
 import xml.etree.ElementTree
 from io import BytesIO
-from typing import List, Tuple
+
+import httpx
+
 from app.config import settings
 
 

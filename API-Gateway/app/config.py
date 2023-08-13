@@ -33,5 +33,6 @@ class Settings(BaseSettings):
     # --- YAML Files ---
     exchanges_file: str = "app/exchanges.yaml"
 
+
 # Create instances
 settings = Settings()

@@ -21,23 +21,17 @@ class PikaUtils:
         :param username: The username of the RabbitMQ server
         :param password: The password of the RabbitMQ server
         :return: None
-
-        :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after 10 attempts
         """
-        try:
-            self.connection = pika.BlockingConnection(pika.ConnectionParameters(
-                host=settings.rabbitmq_host,
-                port=5672,
-                virtual_host='/',
-                credentials=pika.PlainCredentials(settings.rabbitmq_username, settings.rabbitmq_password),
-                connection_attempts=10,
-                retry_delay=10,
-            ))
-            self.channel = self.connection.channel()
-            self.service_id = str(uuid.uuid4())
-
-        except pika.exceptions.AMQPConnectionError as e:
-            raise e
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(
+            host=host,
+            port=5672,
+            virtual_host='/',
+            credentials=pika.PlainCredentials(username, password),
+            connection_attempts=10,
+            retry_delay=10,
+        ))
+        self.channel = self.connection.channel()
+        self.service_id = str(uuid.uuid4())
 
     def declare_exchanges(self, exchanges_file: str) -> None:
         """Declares exchanges from a YAML file
@@ -50,7 +44,7 @@ class PikaUtils:
             exchanges = data['exchanges'].values()
 
         for exchange in exchanges:
-            declared_exchange = self.channel.exchange_declare(
+            self.channel.exchange_declare(
                 exchange['name'],
                 exchange['type'],
                 durable=exchange.get('durable', False),
@@ -60,7 +54,8 @@ class PikaUtils:
             if exchange['name'] == settings.service_exchange:
                 self.service_exchange = exchange['name']
 
-    def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback, auto_delete: bool) -> None:
+    def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback,
+                          auto_delete: bool) -> None:
         """Registers a queue and consumes messages from it
 
         :param queue_name: The name of the queue

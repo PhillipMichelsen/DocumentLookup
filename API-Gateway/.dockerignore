@@ -1,13 +1,13 @@
 .idea
 venv
-tests
+#tests
 .dockerignore
 .gitignore
 Dockerfile
 LICENSE.md
 README.md
 
-__pycache__
-*.pyc
-*.pyo
-*.pyd
+#__pycache__
+#*.pyc
+#*.pyo
+#*.pyd

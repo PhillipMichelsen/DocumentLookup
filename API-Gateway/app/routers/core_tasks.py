@@ -118,4 +118,3 @@ async def route_presigned_url_upload(request: presigned_url_upload_schemas.Presi
     response = await job_response_future
 
     return presigned_url_upload_schemas.PresignedURLUploadResponse.model_validate(json.loads(response))
-

@@ -1,12 +1,12 @@
 import json
 
+from app.config import settings
 from app.schemas.job_schemas import JobRequest, JobResponse
 from app.schemas.task_schemas import TaskRequest
 from app.utils.job_utils import job_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import task_redis
 from app.utils.task_utils import task_utils
-from app.config import settings
 
 
 def handle_job_request(decoded_message_body):
@@ -57,5 +57,3 @@ def handle_job_request(decoded_message_body):
         routing_key=task_attributes.routing_key,
         message=message.encode('utf-8')
     )
-
-

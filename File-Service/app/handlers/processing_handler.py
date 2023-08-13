@@ -1,11 +1,12 @@
-from app.schemas.tasks.processing_schemas import ProcessFileRequest, ProcessFileResponse
-from app.schemas.task_schemas import TaskRequest, TaskResponse
-from app.utils.minio_utils import minio_utils
-from app.utils.response_hold_utils import response_hold
-from app.utils.pika_utils import pika_utils
-from app.modules.processing_module import grobid_fulltext_pdf, parse_grobid_output
-from app.config import settings
 import json
+
+from app.config import settings
+from app.modules.processing_module import grobid_fulltext_pdf, parse_grobid_output
+from app.schemas.task_schemas import TaskRequest, TaskResponse
+from app.schemas.tasks.processing_schemas import ProcessFileRequest, ProcessFileResponse
+from app.utils.minio_utils import minio_utils
+from app.utils.pika_utils import pika_utils
+from app.utils.response_hold_utils import response_hold
 
 
 def handle_process_file(decoded_message_body):
@@ -13,9 +14,9 @@ def handle_process_file(decoded_message_body):
     process_file_request = ProcessFileRequest.model_validate(task_request.request_content)
 
     object_name = process_file_request.Records[0]['s3']['object']['key']
-    bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
-    event_name = process_file_request.Records[0]['eventName']
-    original_filename = process_file_request.Records[0]['s3']['object']['userMetadata']['X-Amz-Meta-Original-Filename']
+    # bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
+    # event_name = process_file_request.Records[0]['eventName']
+    # original_filename = process_file_request.Records[0]['s3']['object']['userMetadata']['X-Amz-Meta-Original-Filename']
     presigned_url_download = minio_utils.generate_download_url('test', object_name)
 
     grobid_output = grobid_fulltext_pdf(presigned_url_download)

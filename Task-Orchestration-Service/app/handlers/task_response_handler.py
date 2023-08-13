@@ -1,8 +1,5 @@
-import json
-
-from app.schemas.task_schemas import TaskResponse, TaskRouteRequest
+from app.schemas.task_schemas import TaskResponse
 from app.utils.job_utils import job_utils
-from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
 from app.utils.task_utils import task_utils
 

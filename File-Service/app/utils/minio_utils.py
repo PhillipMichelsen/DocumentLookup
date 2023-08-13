@@ -4,12 +4,10 @@ from typing import Tuple
 
 from minio import Minio
 
-from app.config import settings
-
 
 class MinioUtils:
     def __init__(self):
-        self.minio: Minio = None
+        self.minio = None
 
     def init_connection(self, endpoint: str, access_key: str, secret_key: str) -> None:
         """Initialize connection to Minio
