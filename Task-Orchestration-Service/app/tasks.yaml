@@ -1,9 +1,9 @@
 tasks:
-  get_presigned_url:
-    task_name: "get_presigned_url"
+  generate_presigned_url_upload:
+    task_name: "generate_presigned_url_upload"
     task_type: "process"
     exchange: "file_exchange"
-    routing_key: "get_presigned_url"
+    routing_key: "presigned_url_upload"
 
   process_file:
     task_name: "process_file_grobid"

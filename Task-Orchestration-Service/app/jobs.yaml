@@ -1,7 +1,7 @@
 jobs:
-  get_presigned_url:
+  generate_presigned_url_upload:
     tasks:
-      - "get_presigned_url"
+      - "generate_presigned_url_upload"
       - "RETURN"
       - "END"
 

@@ -29,7 +29,7 @@ services:
 
   file-service-core:
     build: ./File-Service
-    container_name: file-core-service
+    #container_name: file-core-service
     depends_on:
       - rabbitmq
 
@@ -41,7 +41,7 @@ services:
 
   minio:
     image: minio/minio
-    container_name: mino
+    container_name: minio-service
     command: server --console-address ":9001" --address ":9000" /data
     ports:
       - "9000:9000"

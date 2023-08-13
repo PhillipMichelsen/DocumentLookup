@@ -37,17 +37,16 @@ class MinioUtils:
         object_name = str(uuid.uuid4())
         content_type = mimetypes.guess_type(filename)[0]
         metadata = {
-            "x-amz-meta-task-id": task_id,
-            "x-amz-meta-filename": filename,
-            "x-amz-meta-content-type": content_type
+            "X-Amz-Meta-Task-ID": task_id,
+            "X-Amz-Meta-Filename": filename,
+            "X-Amz-Meta-Content-Type": content_type
         }
 
         presigned_url = self.minio.get_presigned_url(
             method='PUT',
             bucket_name=bucket_name,
             object_name=object_name,
-            expires=600,
-
+            extra_query_params=metadata
         )
 
         return presigned_url, object_name
@@ -60,7 +59,7 @@ class MinioUtils:
         :param expiration: Time in seconds for the generated URL to expire
         :return: Presigned download URL
         """
-        presigned_url = self.minio_client.presigned_get_object(bucket_name, object_name, expiration)
+        presigned_url = self.minio.presigned_get_object(bucket_name, object_name, expiration)
 
         return presigned_url
 
@@ -71,8 +70,7 @@ class MinioUtils:
         :param object_name: The name of the object
         :return: None
         """
-        self.minio_client.remove_object(bucket_name, object_name)
-
+        self.minio.remove_object(bucket_name, object_name)
 
 
 minio_utils = MinioUtils()
