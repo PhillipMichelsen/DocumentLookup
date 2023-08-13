@@ -1,22 +1,38 @@
-from pydantic import ValidationError
-import httpx
+import json
 
+from app.config import settings
 from app.modules.processing_module import grobid_fulltext_pdf, parse_grobid_output
-from app.schemas.processing_schemas import ProcessFileRequest
-from app.utils.pika_helper import pika_helper
+from app.schemas.task_schemas import TaskRequest, TaskResponse
+from app.schemas.tasks.processing_schemas import ProcessFileRequest, ProcessFileResponse
+from app.utils.minio_utils import minio_utils
+from app.utils.pika_utils import pika_utils
+from app.utils.response_hold_utils import response_hold
 
 
-def handle_process_file(raw_payload: dict):
-    request = ProcessFileRequest(**raw_payload)
+def handle_process_file(decoded_message_body):
+    task_request = TaskRequest.model_validate(decoded_message_body)
+    process_file_request = ProcessFileRequest.model_validate(task_request.request_content)
 
-    processed_document = grobid_fulltext_pdf(presigned_url_download=request.presigned_url)
+    object_name = process_file_request.Records[0]['s3']['object']['key']
+    presigned_url_download = minio_utils.generate_download_url('test', object_name)
 
-    paragraphs, sentences = parse_grobid_output(processed_document)
+    grobid_output = grobid_fulltext_pdf(presigned_url_download)
+    paragraphs, sentences = parse_grobid_output(grobid_output)
 
-    paragraph_vectors = pika_helper.send_message('file_queue_embed_embedding', 'embed_embedding', {'sentences': paragraphs})
-    sentences_vectors = pika_helper.send_message('file_queue_embed_embedding', 'embed_embedding', {'sentences': sentences})
+    process_file_response = ProcessFileResponse(paragraphs=paragraphs, sentences=sentences)
 
-    paragraphs_vectors = httpx.post(url=service_endpoints.embed_embedding, json={'sentences': paragraphs}).json()
-    sentence_vectors = httpx.post(url=service_endpoints.embed_embedding, json={'sentences': sentences}).json()
+    response_hold.stash_response(task_request.task_id, process_file_response)
 
+    task_response = TaskResponse(
+        task_id=task_request.task_id,
+        service_id=pika_utils.service_id,
+        status='COMPLETED'
+    )
 
+    message = json.dumps(task_response.model_dump())
+
+    pika_utils.publish_message(
+        exchange_name=settings.task_orchestrator_exchange,
+        routing_key=settings.task_orchestrator_task_response_routing_key,
+        message=message.encode('utf-8')
+    )

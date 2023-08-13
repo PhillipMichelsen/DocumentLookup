@@ -14,12 +14,24 @@ class Settings(BaseSettings):
 
     service_exchange: str = "task_orchestrator_exchange"
     gateway_exchange: str = "gateway_exchange"
+    task_routing_exchange: str = "task_routing_exchange"
 
-    task_request_queue: str = "task_request_queue"
-    task_request_queue_routing_key: str = "task_request"
+    # Non-Service Queue Names + Routing Keys
+    route_request_queue: str = "route_request_queue"
+    route_request_queue_routing_key: str = "route_request"
 
     job_response_queue: str = "job_response_queue"
     job_response_queue_routing_key: str = "job_response"
+
+    # Service Queue Names + Routing Keys
+    job_request_queue: str = "job_request_queue"
+    job_request_queue_routing_key: str = "job_request"
+
+    task_response_queue: str = "task_response_queue"
+    task_response_queue_routing_key: str = "task_response"
+
+    task_route_response_queue: str = "task_route_response_queue"
+    task_route_response_queue_routing_key: str = "task_route_response"
 
     # --- Redis settings ---
     redis_host: str = "redis-service"

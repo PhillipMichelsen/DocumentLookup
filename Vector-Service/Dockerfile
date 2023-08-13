@@ -7,6 +7,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app /src/app
 
+# Uncomment to use locally downloaded models
+# COPY ./embedding_models /src/embedding_models
+
 ENV PYTHONPATH /src
 
 CMD ["python", "app/main.py"]

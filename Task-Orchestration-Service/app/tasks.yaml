@@ -1,24 +1,44 @@
 tasks:
-  upload_file:
-    jobs:
-      - "get_presigned_url"
-      - "RETURN"
-      - "wait_for_file"
-      - "process_file"
-      - "store_text_postgres"
-      - "generate_embeddings"
-      - "store_embeddings_milvus"
-      - "update_text_postgres"
-      - "END"
+  generate_presigned_url_upload:
+    task_name: "generate_presigned_url_upload"
+    task_type: "process"
+    exchange: "file_exchange"
+    routing_key: "presigned_url_upload"
 
-  embed_text:
-    jobs:
-      - "generate_embeddings"
-      - "RETURN"
-      - "END"
+  process_file:
+    task_name: "process_file_grobid"
+    task_type: "process"
+    exchange: "file_exchange"
+    routing_key: "process_file"
+
+  generate_embeddings:
+    task_name: "generate_embeddings"
+    task_type: "process"
+    exchange: "vector_exchange"
+    routing_key: "embed_text"
 
   rerank_text:
-    jobs:
-      - "rerank_text"
-      - "RETURN"
-      - "END"
+    task_name: "rerank_text"
+    task_type: "process"
+    exchange: "vector_exchange"
+    routing_key: "rerank_text"
+
+  store_embeddings_milvus:
+    task_name: "store_embeddings"
+    task_type: "process"
+    exchange: "vector_exchange"
+    routing_key: "store_embeddings"
+
+  store_text_weaviate:
+    task_name: "store_text_weaviate"
+    task_type: "process"
+    exchange: "file_exchange"
+    routing_key: "store_text"
+
+  RETURN:
+    task_name: "RETURN"
+    task_type: "return"
+
+  END:
+    task_name: "END"
+    task_type: "end"

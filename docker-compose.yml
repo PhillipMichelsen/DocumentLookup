@@ -3,30 +3,33 @@ version: '3.8'
 
 services:
   api-gateway-core:
-    build: ./Gateway-Service
-    container_name: api-gateway-core-service
+    build: ./API-Gateway
+    #container_name: api-gateway-core-service
     ports:
       - "8000:8000"
     depends_on:
       - rabbitmq
-      - redis
 
   task-orchestration-service-core:
-    build: ./Task-Orchestrator-Service
-    container_name: task-orchestration-core-service
+    build: ./Task-Orchestration-Service
+    #container_name: task-orchestration-core-service
+    deploy:
+        replicas: 1
     depends_on:
       - rabbitmq
       - redis
 
-  embedding-service-core:
-    build: ./Embedding-Service
-    container_name: embedding-core-service
+  vector-service-core:
+    build: ./Vector-Service
+    #container_name: vector-core-service
+    deploy:
+      replicas: 1
     depends_on:
       - rabbitmq
 
   file-service-core:
     build: ./File-Service
-    container_name: file-core-service
+    #container_name: file-core-service
     depends_on:
       - rabbitmq
 
@@ -38,7 +41,7 @@ services:
 
   minio:
     image: minio/minio
-    container_name: mino
+    container_name: minio-service
     command: server --console-address ":9001" --address ":9000" /data
     ports:
       - "9000:9000"
@@ -56,6 +59,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
+    container_name: rabbitmq-service
     ports:
       - "15672:15672"
       - "5672:5672"
@@ -65,5 +69,6 @@ services:
     
   redis:
     image: redis
+    container_name: redis-service
     ports:
       - "6379:6379"

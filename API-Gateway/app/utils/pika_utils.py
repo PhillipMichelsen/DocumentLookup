@@ -1,102 +1,65 @@
-import asyncio
 import uuid
 
 import aio_pika
+import yaml
+
+from app.config import settings
 
 
 class PikaUtilsAsync:
     def __init__(self):
         self.connection = None
         self.channel = None
-        self.service_id = None
-
-        self.service_exchange = None
-        self.response_queue = None
-
-        self.task_orchestrator_exchange = None
-        self.task_request_queue = None
-        self.task_request_routing_key = None
+        self.service_id = str(uuid.uuid4())
+        self.service_exchange = settings.service_exchange
 
     async def init_connection(self, host: str, username: str, password: str):
-        """Initialize connection to RabbitMQ
-
-        :param host: The host of the RabbitMQ server
-        :param username: The username of the RabbitMQ server
-        :param password: The password of the RabbitMQ server
-
-        :raises aio_pika.exceptions.AMQPConnectionError: If the connection cannot be established after max_retries
-        """
-        for attempt in range(1, 7):
-            try:
-                self.connection = await aio_pika.connect_robust(
-                    host=host,
-                    login=username,
-                    password=password,
-                )
-                self.channel = await self.connection.channel()
-                self.service_id = str(uuid.uuid4())
-
-                break
-
-            except aio_pika.exceptions.AMQPConnectionError as error:
-                if attempt < 6:
-                    await asyncio.sleep(10)
-                else:
-                    raise error
-
-    async def declare_exchanges(self, service_exchange: str, task_orchestration_exchange: str):
-        """Declares exchanges essential for the service
-
-        :param service_exchange: The name of the exchange for this service
-        :param task_orchestration_exchange: The name of the task_orchestration exchange
-        """
-        self.service_exchange = await self.channel.declare_exchange(
-            name=service_exchange,
-            type='direct',
-            durable=False,
-            auto_delete=False
+        self.connection = await aio_pika.connect_robust(
+            host=host,
+            login=username,
+            password=password,
+            timeout=10
         )
+        self.channel = await self.connection.channel()
 
-        self.task_orchestrator_exchange = await self.channel.declare_exchange(
-            name=task_orchestration_exchange,
-            type='direct',
-            durable=False,
-            auto_delete=False
-        )
+    async def declare_exchanges(self, exchanges_file: str) -> None:
+        """Declares exchanges from a YAML file
 
-    async def declare_queues(self, task_request_queue: str, task_request_routing_key: str):
-        """Declares queues essential for the service.
-
-        :param task_request_queue: Name of the task_request_queue
-        :param task_request_routing_key: Routing key for the task_request_queue
+        :param exchanges_file: The path to the YAML file
+        :return: None
         """
-        self.response_queue = await self.channel.declare_queue(
-            name=self.service_id,
+        with open(exchanges_file) as f:
+            data = yaml.safe_load(f)
+            exchanges = data['exchanges'].values()
+
+        for exchange in exchanges:
+            await self.channel.declare_exchange(
+                name=exchange['name'],
+                type=exchange['type'],
+                durable=exchange.get('durable', False),
+                auto_delete=exchange.get('auto_delete', False)
+            )
+
+    async def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback,
+                                auto_delete: bool) -> None:
+        queue = await self.channel.declare_queue(
+            name=queue_name,
             durable=False,
-            auto_delete=True
+            auto_delete=auto_delete
         )
-        await self.response_queue.bind(self.service_exchange, routing_key=self.service_id)
+        await queue.bind(exchange, routing_key=routing_key)
+        await queue.consume(on_message_callback)
 
-        self.task_request_queue = await self.channel.declare_queue(
-            name=task_request_queue,
-            durable=False,
-            auto_delete=False
-        )
-        await self.task_request_queue.bind(self.task_orchestrator_exchange, routing_key=task_request_routing_key)
-
-        self.task_request_routing_key = task_request_routing_key
-
-    async def publish_task(self, message: bytes) -> None:
-        """Publish a message to an exchange
-
-        :param message: The message to publish
-        """
-        await self.task_orchestrator_exchange.publish(
+    async def publish_message(self, exchange_name: str, routing_key: str, message: bytes):
+        exchange = await self.channel.declare_exchange(exchange_name)
+        await exchange.publish(
             aio_pika.Message(
                 body=message
             ),
-            routing_key=self.task_request_routing_key
+            routing_key=routing_key
         )
+        print(f"Message published to exchange {exchange_name} with routing key {routing_key}, content: {message}",
+              flush=True)
 
 
-pika_helper = PikaUtilsAsync()
+pika_utils = PikaUtilsAsync()

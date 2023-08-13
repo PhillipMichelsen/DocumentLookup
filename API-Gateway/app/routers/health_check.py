@@ -1,11 +1,4 @@
-import json
-import uuid
-
 from fastapi import APIRouter
-
-from app.utils.pika_utils import pika_helper
-
-from app.config import settings
 
 router = APIRouter()
 
@@ -16,4 +9,5 @@ router = APIRouter()
             # response_model=
             )
 async def route_health_check():
+    # TODO: Implement health check (LATER)
     raise NotImplementedError

@@ -1,16 +1,16 @@
-import httpx
-import re
 import xml.etree.ElementTree
 from io import BytesIO
-from typing import List, Tuple
-from app.config import service_endpoints
+
+import httpx
+
+from app.config import settings
 
 
 def grobid_fulltext_pdf(presigned_url_download: str) -> bytes:
     file = httpx.get(presigned_url_download)
 
     files = {'input': BytesIO(file.content), 'segmentSentences': '1'}
-    response = httpx.post(url=service_endpoints.process_fulltext_grobid, files=files, timeout=60)
+    response = httpx.post(url=settings.grobid_fulltext_endpoint, files=files, timeout=60)
 
     return response.content
 
