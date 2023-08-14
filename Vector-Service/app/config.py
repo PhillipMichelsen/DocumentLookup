@@ -6,6 +6,8 @@ class Settings(BaseSettings):
 
     # --- Core service settings ---
     service_name: str = "vector_service"
+    weaviate_host: str = "weaviate-service"
+    weaviate_port: str = "8080"
 
     # embedding_model: str = "embedding_models/all-MiniLM-L6-v2"
     # cross_encoding_model: str = "embedding_models/ms-marco-MiniLM-L-12-v2"

@@ -3,6 +3,13 @@ from app.listeners.cross_encode_listener import on_message_rerank
 from app.listeners.embed_listener import on_message_embed
 from app.listeners.route_request_listener import on_message_route_request
 from app.utils.pika_utils import pika_utils
+from app.utils.weaviate_utils import weaviate_utils
+
+weaviate_utils.init_connection(
+    host=settings.weaviate_host,
+    port=settings.weaviate_port,
+)
+
 
 # Prepare pika connection and declare exchanges
 pika_utils.init_connection(
