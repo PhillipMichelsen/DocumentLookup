@@ -1,5 +1,6 @@
 from app.config import settings
 from app.listeners.file_presigned_url_listener import on_message_get_presigned_url_upload
+from app.listeners.file_processing_listener import on_message_process_file
 from app.listeners.route_request_listener import on_message_route_request
 from app.utils.minio_utils import minio_utils
 from app.utils.pika_utils import pika_utils
@@ -24,6 +25,14 @@ pika_utils.register_consumer(
     exchange=settings.service_exchange,
     routing_key=settings.file_queue_presigned_url_upload_routing_key,
     on_message_callback=on_message_get_presigned_url_upload,
+    auto_delete=False
+)
+
+pika_utils.register_consumer(
+    queue_name=settings.file_queue_process_file,
+    exchange=settings.service_exchange,
+    routing_key=settings.file_queue_process_file_routing_key,
+    on_message_callback=on_message_process_file,
     auto_delete=False
 )
 

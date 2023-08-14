@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     file_queue_presigned_url_upload: str = "file_queue_presigned_url_upload"
     file_queue_presigned_url_upload_routing_key: str = "presigned_url_upload"
 
+    file_queue_process_file: str = "file_queue_process_file"
+    file_queue_process_file_routing_key: str = "process_file"
+
     route_request_queue: str = "route_request_queue"
     route_request_queue_routing_key: str = "route_request"
 

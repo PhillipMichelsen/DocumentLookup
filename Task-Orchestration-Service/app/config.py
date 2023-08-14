@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     job_request_queue: str = "job_request_queue"
     job_request_queue_routing_key: str = "job_request"
 
+    minio_message_queue: str = "minio_message_queue"
+    minio_message_queue_routing_key: str = "minio_message"
+
     task_response_queue: str = "task_response_queue"
     task_response_queue_routing_key: str = "task_response"
 

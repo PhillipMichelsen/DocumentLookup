@@ -35,7 +35,7 @@ services:
 
   grobid:
     image: lfoppiano/grobid:0.7.3
-    container_name: grobid
+    container_name: grobid-service
     ports:
       - "8070:8070"
 

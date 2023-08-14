@@ -7,8 +7,7 @@ jobs:
 
   process_file:
     tasks:
-      - "process_file_grobid"
-      - "store_text_weaviate"
+      - "process_file"
       - "END"
 
   embed_text:

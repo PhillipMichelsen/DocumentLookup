@@ -11,10 +11,11 @@ from app.utils.response_hold_utils import response_hold
 
 def handle_process_file(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
-    process_file_request = ProcessFileRequest.model_validate(task_request.request_content)
+    process_file_request = ProcessFileRequest.model_validate(json.loads(task_request.request_content))
 
     object_name = process_file_request.Records[0]['s3']['object']['key']
-    presigned_url_download = minio_utils.generate_download_url('test', object_name)
+    bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
+    presigned_url_download = minio_utils.generate_download_url(bucket_name, object_name)
 
     grobid_output = grobid_fulltext_pdf(presigned_url_download)
     paragraphs, sentences = parse_grobid_output(grobid_output)

@@ -14,7 +14,6 @@ def handle_get_presigned_url_upload(decoded_message_body):
 
     presigned_url_upload, _ = minio_utils.generate_upload_url(
         bucket_name='test',
-        task_id=task_request.task_id,
         filename=presigned_url_upload_request.filename
     )
 
