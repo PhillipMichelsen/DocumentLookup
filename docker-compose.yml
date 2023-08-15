@@ -34,7 +34,7 @@ services:
       - rabbitmq
 
   grobid:
-    image: lfoppiano/grobid:0.7.3
+    image: grobid/grobid:0.7.3
     container_name: grobid-service
     ports:
       - "8070:8070"
@@ -46,6 +46,12 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    environment:
+      - MINIO_NOTIFY_AMQP_ENABLE=on
+      - MINIO_NOTIFY_AMQP_URL=amqp://admin:admin123@rabbitmq-service:5672
+      - MINIO_NOTIFY_AMQP_EXCHANGE=task_orchestrator_exchange
+      - MINIO_NOTIFY_AMQP_ROUTING_KEY=minio_message
+      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE=direct
 
   weaviate:
     image: semitechnologies/weaviate

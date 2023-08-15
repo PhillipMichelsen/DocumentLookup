@@ -19,17 +19,17 @@ class Settings(BaseSettings):
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
 
+    # Exchanges
     service_exchange: str = "vector_exchange"
     task_routing_exchange: str = "task_routing_exchange"
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
 
-    # Non-Service Queue Names + Routing Keys
-    task_orchestrator_task_response_routing_key: str = "task_response"
-    task_orchestrator_task_route_response_routing_key: str = "task_route_response"
-
     # Service Queue Names + Routing Keys
     embed_text_queue: str = "embed_text_queue"
     embed_text_queue_routing_key: str = "embed_text"
+
+    embed_store_text_queue: str = "embed_store_text_queue"
+    embed_store_text_queue_routing_key: str = "embed_store_text"
 
     rerank_text_queue: str = "rerank_text_queue"
     rerank_text_queue_routing_key: str = "rerank_text"
@@ -37,9 +37,12 @@ class Settings(BaseSettings):
     route_request_queue: str = "route_request_queue"
     route_request_queue_routing_key: str = "route_request"
 
-    # --- Redis settings ---
-    redis_host: str = "redis-service"
-    redis_port: int = 6379
+    # Non-Service Queue Names + Routing Keys
+    task_orchestrator_task_response_routing_key: str = "task_response"
+    task_orchestrator_task_route_response_routing_key: str = "task_route_response"
+
+    task_orchestrator_job_request_queue: str = "job_request_queue"
+    task_orchestrator_job_request_routing_key: str = "job_request"
 
     # --- YAML Files ---
     exchanges_file: str = "app/exchanges.yaml"

@@ -98,7 +98,7 @@ class PikaUtils:
             routing_key=routing_key,
             body=message
         )
-        print(f"Message published to exchange {exchange_name} with routing key {routing_key}, content: {message}",
+        print(f"Message published to exchange {exchange_name} with routing key {routing_key}",
               flush=True)
 
     def start_consuming(self) -> None:

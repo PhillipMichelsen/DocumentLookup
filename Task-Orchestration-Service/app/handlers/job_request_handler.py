@@ -11,7 +11,6 @@ from app.utils.task_utils import task_utils
 
 def handle_job_request(decoded_message_body):
     job_request = JobRequest.model_validate(decoded_message_body)
-    print(f'Job request received: {job_request.model_dump()}', flush=True)
 
     job = job_utils.create_job(
         job_name=job_request.job_name,

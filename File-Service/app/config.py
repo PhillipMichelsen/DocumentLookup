@@ -8,11 +8,19 @@ class Settings(BaseSettings):
     service_name: str = "file-service"
     grobid_fulltext_endpoint: str = "http://grobid-service:8070/api/processFulltextDocument"
 
+    minio_host: str = "minio-service:9000"
+    minio_access_key: str = "minioadmin"
+    minio_secret_key: str = "minioadmin"
+
+    weaviate_host: str = "weaviate-service"
+    weaviate_port: str = "8080"
+
     # --- RabbitMQ settings ---
     rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
 
+    # Exchanges
     service_exchange: str = "file_exchange"
     task_routing_exchange: str = "task_routing_exchange"
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
@@ -31,17 +39,8 @@ class Settings(BaseSettings):
     task_orchestrator_task_response_routing_key: str = "task_response"
     task_orchestrator_task_route_response_routing_key: str = "task_route_response"
 
-    # --- Redis settings ---
-    redis_host: str = "redis-service"
-    redis_port: int = 6379
-
-    # --- Minio settings ---
-    minio_host: str = "minio-service:9000"
-    minio_access_key: str = "minioadmin"
-    minio_secret_key: str = "minioadmin"
-
-    # --- Weaviate settings ---
-    weaviate_host: str = "weaviate-service"
+    task_orchestrator_job_request_queue: str = "job_request_queue"
+    task_orchestrator_job_request_routing_key: str = "job_request"
 
     # --- YAML Files ---
     exchanges_file: str = "app/exchanges.yaml"

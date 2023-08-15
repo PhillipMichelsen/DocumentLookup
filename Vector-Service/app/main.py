@@ -2,14 +2,15 @@ from app.config import settings
 from app.listeners.cross_encode_listener import on_message_rerank
 from app.listeners.embed_listener import on_message_embed
 from app.listeners.route_request_listener import on_message_route_request
+from app.listeners.embed_store_listener import on_message_embed_store
 from app.utils.pika_utils import pika_utils
 from app.utils.weaviate_utils import weaviate_utils
 
+# Prepare weaviate connection
 weaviate_utils.init_connection(
     host=settings.weaviate_host,
     port=settings.weaviate_port,
 )
-
 
 # Prepare pika connection and declare exchanges
 pika_utils.init_connection(
@@ -25,6 +26,15 @@ pika_utils.register_consumer(
     exchange=settings.service_exchange,
     routing_key=settings.embed_text_queue_routing_key,
     on_message_callback=on_message_embed,
+    auto_delete=False
+)
+
+# Register consumer for embed store request
+pika_utils.register_consumer(
+    queue_name=settings.embed_store_text_queue,
+    exchange=settings.service_exchange,
+    routing_key=settings.embed_store_text_queue_routing_key,
+    on_message_callback=on_message_embed_store,
     auto_delete=False
 )
 

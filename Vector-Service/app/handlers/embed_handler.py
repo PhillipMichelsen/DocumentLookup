@@ -10,7 +10,6 @@ from app.utils.response_hold_utils import response_hold
 
 def handle_embed(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
-    print(f'Embed request received: {task_request.request_content}', flush=True)
     embed_request = EmbedRequest.model_validate(json.loads(task_request.request_content))
 
     embeddings = generate_embeddings(embed_request.sentences)

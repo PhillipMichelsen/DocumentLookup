@@ -10,8 +10,7 @@ from app.utils.task_utils import task_utils
 
 
 def handle_minio_message(decoded_message_body):
-    print(f'Minio messaged received: {decoded_message_body}', flush=True)
-
+    # No need to validate the message body, Minio sends messages in a predefined format
     job = job_utils.create_job(
         job_name='process_file',
         job_id=str(uuid.uuid4()),

@@ -8,7 +8,6 @@ from app.utils.response_utils import response_utils
 
 async def handle_update_result(decoded_message_body):
     request = TaskRequest.model_validate(decoded_message_body)
-    print(f'Update result request received: {request}', flush=True)
     await response_utils.update_response(request.task_id, request.request_content)
 
     task_response = TaskResponse(

@@ -1,18 +1,14 @@
+import uuid
+
 import weaviate
 
 
 class WeaviateUtils:
     def __init__(self):
-        self.class_name = None
-        self.client = None
+        self.class_name = "Text"
+        self.client: weaviate.Client = None
 
     def init_connection(self, host: str, port: int) -> None:
-        """Initialize connection to Weaviate
-
-        :param host: The host of the Weaviate server
-        :param port: The port of the Weaviate server
-        :return: None
-        """
         self.client = weaviate.Client(f'http://{host}:{port}')
 
         class_object = {
@@ -27,51 +23,51 @@ class WeaviateUtils:
                 {
                     "name": "type",
                     "description": "The type of the text, either paragraph or sentence",
-                    "dataType": ["string"]
+                    "dataType": ["text"]
                 },
                 {
                     "name": "documentID",
                     "description": "The ID of the document the text belongs to",
-                    "dataType": ["string"]
+                    "dataType": ["text"]
                 }
             ],
             "vectorizer": "none"
         }
 
-        self.client.schema.create_class(class_object)
+        if not self.client.schema.contains():
+            self.client.schema.create_class(class_object)
 
-    def add_entry(self, text: str, text_type: str, document_id: str, vector=None):
+    def add_entry(self, text: str, text_type: str, document_id: str):
         """
         Add an entry to Weaviate.
 
         :param text: Text content.
         :param text_type: Type of the text (paragraph, sentence).
         :param document_id: UUID of the document in Minio.
-        :param vector: Vector representation of the text (optional).
         """
         obj = {
             "text": text,
             "type": text_type,
-            "documentId": document_id,
+            "documentID": document_id,
         }
-        return self.client.data_object.create(obj, self.class_name, vector=vector)
+        return self.client.data_object.create(data_object=obj, class_name=self.class_name)
 
-    def update_entry(self, uuid, vector):
+    def add_vector_to_entry(self, entry_uuid, vector):
         """
         Update an entry in Weaviate by adding or updating a vector.
 
-        :param uuid: UUID of the object.
+        :param entry_uuid: UUID of the entry.
         :param vector: Vector to add or update.
         """
-        return self.client.data_object.update_vector(self.class_name, uuid, vector)
+        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid, vector=vector)
 
-    def delete_entry(self, uuid):
+    def delete_entry(self, entry_uuid):
         """
         Delete an entry from Weaviate by UUID.
 
-        :param uuid: UUID of the object.
+        :param entry_uuid: UUID of the entry.
         """
-        return self.client.data_object.delete(self.class_name, uuid)
+        return self.client.data_object.delete(uuid=entry_uuid, class_name=self.class_name)
 
 
 weaviate_utils = WeaviateUtils()

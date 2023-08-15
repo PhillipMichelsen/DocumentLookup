@@ -4,11 +4,17 @@ from app.listeners.file_processing_listener import on_message_process_file
 from app.listeners.route_request_listener import on_message_route_request
 from app.utils.minio_utils import minio_utils
 from app.utils.pika_utils import pika_utils
+from app.utils.weaviate_utils import weaviate_utils
 
 minio_utils.init_connection(
     endpoint=settings.minio_host,
     access_key=settings.minio_access_key,
     secret_key=settings.minio_secret_key
+)
+
+weaviate_utils.init_connection(
+    host=settings.weaviate_host,
+    port=settings.weaviate_port
 )
 
 # Prepare pika connection and declare exchanges

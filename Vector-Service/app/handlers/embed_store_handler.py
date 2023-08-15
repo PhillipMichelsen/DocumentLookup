@@ -1,23 +1,23 @@
 import json
 
 from app.config import settings
-from app.modules.cross_encode_module import rerank, generate_cross_encoding
+from app.modules.embed_module import generate_embeddings
 from app.schemas.task_schemas import TaskRequest, TaskResponse
-from app.schemas.tasks.cross_encode_schemas import CrossEncodeRequest, CrossEncodeResponse
+from app.schemas.tasks.embed_store_schemas import EmbedStoreRequest
 from app.utils.pika_utils import pika_utils
+from app.utils.weaviate_utils import weaviate_utils
 from app.utils.response_hold_utils import response_hold
 
 
-def handle_cross_encode(decoded_message_body):
+def handle_embed_store(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
-    cross_encode_request = CrossEncodeRequest.model_validate(json.loads(task_request.request_content))
+    embed_store_request = EmbedStoreRequest.model_validate(json.loads(task_request.request_content))
 
-    sentence_score_pairs = generate_cross_encoding(cross_encode_request.query, cross_encode_request.sentences)
-    sentences_ranked, scores_ranked = rerank(sentence_score_pairs)
+    embeddings = generate_embeddings(embed_store_request.text)
+    embeddings_with_uuid = [(embeddings[i], embed_store_request.uuid[i]) for i in range(len(embeddings))]
 
-    cross_encode_response = CrossEncodeResponse(sentences=sentences_ranked, scores=scores_ranked)
-
-    response_hold.stash_response(task_request.task_id, cross_encode_response)
+    for embedding, uuid in embeddings_with_uuid:
+        weaviate_utils.add_vector_to_entry(uuid, embedding)
 
     task_response = TaskResponse(
         task_id=task_request.task_id,
@@ -26,7 +26,6 @@ def handle_cross_encode(decoded_message_body):
     )
 
     message = json.dumps(task_response.model_dump())
-
     pika_utils.publish_message(
         exchange_name=settings.task_orchestrator_exchange,
         routing_key=settings.task_orchestrator_task_response_routing_key,

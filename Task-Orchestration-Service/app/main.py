@@ -8,14 +8,6 @@ from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
 from app.utils.task_utils import task_utils
 
-# Prepare pika connection and declare exchanges
-pika_utils.init_connection(
-    host=settings.rabbitmq_host,
-    username=settings.rabbitmq_username,
-    password=settings.rabbitmq_password
-)
-pika_utils.declare_exchanges(settings.exchanges_file)
-
 # Prepare redis connections
 task_redis.init_connection(
     host=settings.redis_host,
@@ -31,6 +23,14 @@ job_redis.init_connection(
 # Load tasks and jobs
 task_utils.load_tasks(settings.task_file)
 job_utils.load_jobs(settings.job_file)
+
+# Prepare pika connection and declare exchanges
+pika_utils.init_connection(
+    host=settings.rabbitmq_host,
+    username=settings.rabbitmq_username,
+    password=settings.rabbitmq_password
+)
+pika_utils.declare_exchanges(settings.exchanges_file)
 
 # Register consumer for job request
 pika_utils.register_consumer(
