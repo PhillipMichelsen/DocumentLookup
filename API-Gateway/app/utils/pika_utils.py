@@ -58,7 +58,7 @@ class PikaUtilsAsync:
             ),
             routing_key=routing_key
         )
-        print(f"Message published to exchange {exchange_name} with routing key {routing_key}, content: {message}",
+        print(f"Message published to exchange {exchange_name} with routing key {routing_key}",
               flush=True)
 
 

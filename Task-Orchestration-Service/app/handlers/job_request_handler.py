@@ -15,7 +15,7 @@ def handle_job_request(decoded_message_body):
     job = job_utils.create_job(
         job_name=job_request.job_name,
         job_id=job_request.job_id,
-        initial_request_content=job_request.initial_request_content,
+        job_data=job_request.job_data,
         requesting_service_exchange=job_request.requesting_service_exchange,
         requesting_service_return_queue_routing_key=job_request.requesting_service_return_queue_routing_key,
         requesting_service_id=job_request.requesting_service_id
@@ -31,7 +31,7 @@ def handle_job_request(decoded_message_body):
     task_request = TaskRequest(
         task_id=task.task_id,
         job_id=job.job_id,
-        request_content=job.initial_request_content
+        job_data=job.job_data
     )
 
     job_response = JobResponse(

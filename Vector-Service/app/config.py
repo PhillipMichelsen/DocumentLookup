@@ -9,10 +9,10 @@ class Settings(BaseSettings):
     weaviate_host: str = "weaviate-service"
     weaviate_port: str = "8080"
 
-    # embedding_model: str = "embedding_models/all-MiniLM-L6-v2"
-    # cross_encoding_model: str = "embedding_models/ms-marco-MiniLM-L-12-v2"
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
-    cross_encoding_model: str = "cross-encoder/ms-marco-MiniLM-L-12-v2"
+    embedding_model: str = "embedding_models/all-MiniLM-L6-v2"
+    cross_encoding_model: str = "embedding_models/ms-marco-MiniLM-L-12-v2"
+    # embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    # cross_encoding_model: str = "cross-encoder/ms-marco-MiniLM-L-12-v2"
 
     # --- RabbitMQ settings ---
     rabbitmq_host: str = "rabbitmq-service"
@@ -33,6 +33,12 @@ class Settings(BaseSettings):
 
     rerank_text_queue: str = "rerank_text_queue"
     rerank_text_queue_routing_key: str = "rerank_text"
+
+    retrieve_closest_entries_queue: str = "retrieve_closest_entries_queue"
+    retrieve_closest_entries_queue_routing_key: str = "retrieve_closest_entries"
+
+    store_embedding_queue: str = "store_embedding_queue"
+    store_embedding_queue_routing_key: str = "store_embedding"
 
     route_request_queue: str = "route_request_queue"
     route_request_queue_routing_key: str = "route_request"

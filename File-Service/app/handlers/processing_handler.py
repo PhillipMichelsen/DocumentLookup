@@ -3,16 +3,17 @@ import uuid
 from app.config import settings
 from app.modules.processing_module import grobid_fulltext_pdf, parse_grobid_output
 from app.schemas.task_schemas import TaskRequest, TaskResponse
-from app.schemas.tasks.processing_schemas import ProcessFileRequest
+from app.schemas.servicve_tasks.processing_schemas import ProcessFileRequest
+from app.schemas.core_tasks import embed_store_schemas
 from app.schemas.job_schemas import JobRequest
-from app.utils.minio_utils import minio_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.weaviate_utils import weaviate_utils
 
 
 def handle_process_file(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
-    process_file_request = ProcessFileRequest.model_validate(json.loads(task_request.request_content))
+    job_data = json.loads(task_request.job_data)
+    process_file_request = ProcessFileRequest.model_validate(job_data)
 
     object_name = process_file_request.Records[0]['s3']['object']['key']
     bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
@@ -35,7 +36,10 @@ def handle_process_file(decoded_message_body):
                 requesting_service_return_queue_routing_key='None',
                 requesting_service_id=pika_utils.service_id,
                 job_id=str(uuid.uuid4()),
-                initial_request_content=json.dumps({"text": group, "uuid": uuids})
+                job_data=json.dumps(embed_store_schemas.EmbedStoreRequest(
+                    text=group,
+                    uuid=uuids
+                ).model_dump())
             )
 
             task_message = json.dumps(job.model_dump())
@@ -55,7 +59,6 @@ def handle_process_file(decoded_message_body):
     )
 
     message = json.dumps(task_response.model_dump())
-
     pika_utils.publish_message(
         exchange_name=settings.task_orchestrator_exchange,
         routing_key=settings.task_orchestrator_task_response_routing_key,

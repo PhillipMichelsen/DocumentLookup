@@ -59,7 +59,41 @@ class WeaviateUtils:
         :param entry_uuid: UUID of the entry.
         :param vector: Vector to add or update.
         """
-        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid, vector=vector)
+        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid,
+                                              vector=vector)
+
+    def retrieve_closest_entries(self, vector, top_n, type_filter, document_id):
+        query = (
+            self.client.query
+            .get("Text", ["text"])
+            .with_near_vector({
+                "vector": vector
+            })
+            .with_limit(top_n)
+            .with_where({
+                "path": ["type"],
+                "operator": "Equal",
+                "valueText": type_filter
+            })
+        )
+
+        if document_id:
+            query = query.with_where([
+                {
+                    "path": ["documentID"],
+                    "operator": "Equal",
+                    "valueString": document_id
+                },
+                {
+                    "path": ["type"],
+                    "operator": "Equal",
+                    "valueText": type_filter
+                }
+            ])
+
+        response = query.do()
+
+        return response
 
     def delete_entry(self, entry_uuid):
         """

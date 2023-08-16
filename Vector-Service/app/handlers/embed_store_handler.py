@@ -3,7 +3,7 @@ import json
 from app.config import settings
 from app.modules.embed_module import generate_embeddings
 from app.schemas.task_schemas import TaskRequest, TaskResponse
-from app.schemas.tasks.embed_store_schemas import EmbedStoreRequest
+from app.schemas.service_tasks.embed_store_schemas import EmbedStoreRequest
 from app.utils.pika_utils import pika_utils
 from app.utils.weaviate_utils import weaviate_utils
 from app.utils.response_hold_utils import response_hold
@@ -11,7 +11,8 @@ from app.utils.response_hold_utils import response_hold
 
 def handle_embed_store(decoded_message_body):
     task_request = TaskRequest.model_validate(decoded_message_body)
-    embed_store_request = EmbedStoreRequest.model_validate(json.loads(task_request.request_content))
+    job_data = json.loads(task_request.job_data)
+    embed_store_request = EmbedStoreRequest.model_validate(job_data)
 
     embeddings = generate_embeddings(embed_store_request.text)
     embeddings_with_uuid = [(embeddings[i], embed_store_request.uuid[i]) for i in range(len(embeddings))]

@@ -64,7 +64,7 @@ class TaskUtils:
         message = json.dumps(task_route_request.model_dump())
         pika_utils.publish_message(
             exchange_name=settings.task_routing_exchange,
-            routing_key=requesting_service_id,
+            routing_key=f'{requesting_service_id}_{settings.route_request_queue_routing_key}',
             message=message.encode('utf-8')
         )
 

@@ -7,3 +7,4 @@ minio==7.1.15
 httpx==0.24.1
 weaviate-client==3.22.1
 pyyaml==6.0.1
+psycopg2-binary==2.9.7

@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.listeners.job_response_listener import job_response_callback
 from app.listeners.update_result_listener import update_result_callback
+from app.routers import utility_tasks
 from app.routers import core_tasks
 from app.utils.pika_utils import pika_utils
 
@@ -11,7 +12,8 @@ from app.utils.pika_utils import pika_utils
 app = FastAPI()
 
 # Routers
-app.include_router(core_tasks.router, prefix="/core-tasks", tags=["core-tasks"])
+app.include_router(core_tasks.router, prefix="/core-jobs", tags=["utility-jobs"])
+app.include_router(utility_tasks.router, prefix="/utility-jobs", tags=["utility-jobs"])
 
 # Middleware
 app.add_middleware(

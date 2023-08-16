@@ -7,7 +7,7 @@ class JobRequest(BaseModel):
     requesting_service_return_queue_routing_key: str
     requesting_service_id: str
     job_id: str
-    initial_request_content: str
+    job_data: str
 
 
 class JobResponse(BaseModel):

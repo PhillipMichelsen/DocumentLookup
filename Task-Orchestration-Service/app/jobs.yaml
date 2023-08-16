@@ -12,7 +12,8 @@ jobs:
 
   embed_store_text:
     tasks:
-      - "embed_store"
+      - "generate_embeddings"
+      - "store_embedding"
       - "END"
 
   embed_text:
@@ -23,6 +24,20 @@ jobs:
 
   rerank_text:
     tasks:
+      - "rerank_text"
+      - "RETURN"
+      - "END"
+
+  retrieve_closest_entries:
+    tasks:
+      - "retrieve_closest_entries"
+      - "RETURN"
+      - "END"
+
+  retrieve_query_context:
+    tasks:
+      - "generate_embeddings"
+      - "retrieve_closest_entries"
       - "rerank_text"
       - "RETURN"
       - "END"

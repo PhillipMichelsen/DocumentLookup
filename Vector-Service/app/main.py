@@ -3,6 +3,8 @@ from app.listeners.cross_encode_listener import on_message_rerank
 from app.listeners.embed_listener import on_message_embed
 from app.listeners.route_request_listener import on_message_route_request
 from app.listeners.embed_store_listener import on_message_embed_store
+from app.listeners.retrieve_closest_entries_listener import on_message_retrieve_closest_entries
+from app.listeners.store_embedding_listener import on_message_store_embedding
 from app.utils.pika_utils import pika_utils
 from app.utils.weaviate_utils import weaviate_utils
 
@@ -44,6 +46,24 @@ pika_utils.register_consumer(
     exchange=settings.service_exchange,
     routing_key=settings.rerank_text_queue_routing_key,
     on_message_callback=on_message_rerank,
+    auto_delete=False
+)
+
+# Register consumer for store embedding request
+pika_utils.register_consumer(
+    queue_name=settings.store_embedding_queue,
+    exchange=settings.service_exchange,
+    routing_key=settings.store_embedding_queue_routing_key,
+    on_message_callback=on_message_store_embedding,
+    auto_delete=False
+)
+
+# Register consumer for retrieve closest entries request
+pika_utils.register_consumer(
+    queue_name=settings.retrieve_closest_entries_queue,
+    exchange=settings.service_exchange,
+    routing_key=settings.retrieve_closest_entries_queue_routing_key,
+    on_message_callback=on_message_retrieve_closest_entries,
     auto_delete=False
 )
 

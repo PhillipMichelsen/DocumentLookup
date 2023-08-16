@@ -14,7 +14,7 @@ def handle_minio_message(decoded_message_body):
     job = job_utils.create_job(
         job_name='process_file',
         job_id=str(uuid.uuid4()),
-        initial_request_content=json.dumps(decoded_message_body),
+        job_data=json.dumps(decoded_message_body),
         requesting_service_exchange=settings.service_exchange,
         requesting_service_return_queue_routing_key='None',
         requesting_service_id=pika_utils.service_id
@@ -30,7 +30,7 @@ def handle_minio_message(decoded_message_body):
     task_request = TaskRequest(
         task_id=task.task_id,
         job_id=job.job_id,
-        request_content=job.initial_request_content
+        job_data=job.job_data
     )
 
     job_response = JobResponse(

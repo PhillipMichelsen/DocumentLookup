@@ -22,14 +22,14 @@ class JobUtils:
             for job_name, job_config in config['jobs'].items():
                 self.jobs[job_name] = JobsSchema.model_validate(job_config)
 
-    def create_job(self, job_name: str, job_id: str, initial_request_content: str,
+    def create_job(self, job_name: str, job_id: str, job_data: str,
                    requesting_service_exchange: str, requesting_service_return_queue_routing_key: str,
                    requesting_service_id: str) -> JobSchema:
         """Creates a job
 
         :param job_name: Name of job
         :param job_id: ID of job
-        :param initial_request_content: Initial request content
+        :param job_data: Data of job
         :param requesting_service_exchange: Exchange of requesting service
         :param requesting_service_return_queue_routing_key: Routing key of requesting service's return queue
         :param requesting_service_id: ID of requesting service
@@ -48,7 +48,7 @@ class JobUtils:
             requesting_service_id=requesting_service_id,
             task_chain=','.join(task_chain_ids),
             current_task_index=0,
-            initial_request_content=initial_request_content,
+            job_data=job_data,
             status='CREATED'
         )
 

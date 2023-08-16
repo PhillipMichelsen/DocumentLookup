@@ -29,6 +29,18 @@ tasks:
     exchange: "vector_exchange"
     routing_key: "embed_store_text"
 
+  store_embedding:
+    task_name: "store_embedding"
+    task_type: "process"
+    exchange: "vector_exchange"
+    routing_key: "store_embedding"
+
+  retrieve_closest_entries:
+    task_name: "retrieve_closest_entries"
+    task_type: "process"
+    exchange: "vector_exchange"
+    routing_key: "retrieve_closest_entries"
+
   RETURN:
     task_name: "RETURN"
     task_type: "return"
