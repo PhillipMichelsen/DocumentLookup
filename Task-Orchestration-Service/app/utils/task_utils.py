@@ -14,13 +14,12 @@ class TaskUtils:
     def __init__(self):
         self.tasks = {}
 
-    def load_tasks(self, task_file: str) -> None:
+    def load_tasks(self) -> None:
         """Load jobs from a YAML file
 
-        :param task_file: Path to the YAML file
         :return: None
         """
-        with open(task_file, "r") as stream:
+        with open('app/tasks.yaml', "r") as stream:
             config = yaml.safe_load(stream)
 
             for task_name, task_config in config['tasks'].items():

@@ -12,5 +12,3 @@ class RetrieveQueryContextRequest(BaseModel):
 
 class RetrieveQueryContextResponse(BaseModel):
     ranked_entries: List[str]
-
-

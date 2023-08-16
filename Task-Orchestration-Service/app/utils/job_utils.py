@@ -10,13 +10,12 @@ class JobUtils:
     def __init__(self):
         self.jobs = {}
 
-    def load_jobs(self, job_file: str) -> None:
+    def load_jobs(self) -> None:
         """Load jobs from YAML file
 
-        :param job_file: Path to YAML file
         :return: None
         """
-        with open(job_file, "r") as stream:
+        with open('app/jobs.yaml', "r") as stream:
             config = yaml.safe_load(stream)
 
             for job_name, job_config in config['jobs'].items():

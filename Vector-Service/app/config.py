@@ -50,9 +50,6 @@ class Settings(BaseSettings):
     task_orchestrator_job_request_queue: str = "job_request_queue"
     task_orchestrator_job_request_routing_key: str = "job_request"
 
-    # --- YAML Files ---
-    exchanges_file: str = "app/exchanges.yaml"
-
 
 # Create instances
 settings = Settings()

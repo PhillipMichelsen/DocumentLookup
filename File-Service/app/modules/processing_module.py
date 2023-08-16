@@ -1,4 +1,4 @@
-import xml.etree.ElementTree
+import defusedxml.ElementTree
 from app.utils.minio_utils import minio_utils
 import uuid
 import httpx
@@ -28,7 +28,7 @@ def process_header_pdf(raw_payload: dict) -> dict:
 
 
 def parse_grobid_output(grobid_output):
-    parsed = xml.etree.ElementTree.fromstring(grobid_output)
+    parsed = defusedxml.ElementTree.fromstring(grobid_output)
 
     paragraphs = parsed.findall('.//tei:p', namespaces={'tei': 'http://www.tei-c.org/ns/1.0'})
     paragraphs = [' '.join(p.itertext()) for p in paragraphs]

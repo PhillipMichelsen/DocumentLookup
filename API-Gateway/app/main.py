@@ -34,7 +34,7 @@ async def startup():
         username=settings.rabbitmq_username,
         password=settings.rabbitmq_password
     )
-    await pika_utils.declare_exchanges(settings.exchanges_file)
+    await pika_utils.declare_exchanges()
 
     # Register consumer for job response
     await pika_utils.register_consumer(

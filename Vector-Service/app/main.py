@@ -20,7 +20,7 @@ pika_utils.init_connection(
     username=settings.rabbitmq_username,
     password=settings.rabbitmq_password
 )
-pika_utils.declare_exchanges(settings.exchanges_file)
+pika_utils.declare_exchanges()
 
 # Register consumer for embed request
 pika_utils.register_consumer(

@@ -35,13 +35,12 @@ class PikaUtils:
         self.channel = self.connection.channel()
         self.service_id = str(uuid.uuid4())
 
-    def declare_exchanges(self, exchanges_file: str) -> None:
+    def declare_exchanges(self) -> None:
         """Declares exchanges from a YAML file
 
-        :param exchanges_file: The path to the YAML file
         :return: None
         """
-        with open(exchanges_file) as f:
+        with open('app/exchanges.yaml') as f:
             data = yaml.safe_load(f)
             exchanges = data['exchanges'].values()
 

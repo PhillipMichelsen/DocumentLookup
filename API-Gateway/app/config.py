@@ -31,9 +31,6 @@ class Settings(BaseSettings):
     task_orchestrator_task_response_routing_key: str = "task_response"
     task_orchestrator_task_route_response_routing_key: str = "task_route_response"
 
-    # --- YAML Files ---
-    exchanges_file: str = "app/exchanges.yaml"
-
 
 # Create instances
 settings = Settings()

@@ -21,8 +21,8 @@ job_redis.init_connection(
 )
 
 # Load tasks and jobs
-task_utils.load_tasks(settings.task_file)
-job_utils.load_jobs(settings.job_file)
+task_utils.load_tasks()
+job_utils.load_jobs()
 
 # Prepare pika connection and declare exchanges
 pika_utils.init_connection(
@@ -30,7 +30,7 @@ pika_utils.init_connection(
     username=settings.rabbitmq_username,
     password=settings.rabbitmq_password
 )
-pika_utils.declare_exchanges(settings.exchanges_file)
+pika_utils.declare_exchanges()
 
 # Register consumer for job request
 pika_utils.register_consumer(

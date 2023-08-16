@@ -52,7 +52,7 @@ async def route_embed_store_text(request: embed_store_schemas.EmbedStoreRequest)
              description="Searches for the closest entries to the given query",
              response_model=retrieve_query_context_schemas.RetrieveQueryContextResponse
              )
-async def route_embed_store_text(request: retrieve_query_context_schemas.RetrieveQueryContextRequest):
+async def route_retrieve_query_context(request: retrieve_query_context_schemas.RetrieveQueryContextRequest):
     job_id = str(uuid.uuid4())
 
     job = JobRequest(
