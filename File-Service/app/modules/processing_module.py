@@ -1,9 +1,8 @@
 import xml.etree.ElementTree
 from app.utils.minio_utils import minio_utils
-import uuid
+from app.config import settings
 import httpx
 from io import BytesIO
-from app.config import settings
 
 
 def grobid_fulltext_pdf(bucket_name, object_name) -> str:
@@ -18,8 +17,7 @@ def grobid_fulltext_pdf(bucket_name, object_name) -> str:
 
     if response.status_code == 200:
         return response.text
-    else:
-        raise Exception(f'Failed to process PDF with GROBID. Status code: {response.status_code}')
+    raise Exception(f'Failed to process PDF with GROBID. Status code: {response.status_code}')
 
 
 def process_header_pdf(raw_payload: dict) -> dict:

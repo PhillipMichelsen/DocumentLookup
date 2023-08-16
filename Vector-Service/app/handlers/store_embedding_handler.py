@@ -1,7 +1,6 @@
 import json
 
 from app.config import settings
-from app.modules.embed_module import generate_embeddings
 from app.schemas.task_schemas import TaskRequest, TaskResponse
 from app.schemas.service_tasks.store_embedding_schemas import StoreEmbeddingRequest
 from app.utils.pika_utils import pika_utils

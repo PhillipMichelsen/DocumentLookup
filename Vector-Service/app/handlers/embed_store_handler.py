@@ -6,7 +6,6 @@ from app.schemas.task_schemas import TaskRequest, TaskResponse
 from app.schemas.service_tasks.embed_store_schemas import EmbedStoreRequest
 from app.utils.pika_utils import pika_utils
 from app.utils.weaviate_utils import weaviate_utils
-from app.utils.response_hold_utils import response_hold
 
 
 def handle_embed_store(decoded_message_body):
