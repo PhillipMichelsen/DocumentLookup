@@ -23,12 +23,6 @@ tasks:
     exchange: "vector_exchange"
     routing_key: "rerank_text"
 
-  embed_store:
-    task_name: "embed_store"
-    task_type: "process"
-    exchange: "vector_exchange"
-    routing_key: "embed_store_text"
-
   store_embedding:
     task_name: "store_embedding"
     task_type: "process"
@@ -40,6 +34,12 @@ tasks:
     task_type: "process"
     exchange: "vector_exchange"
     routing_key: "retrieve_closest_entries"
+
+  get_files:
+    task_name: "get_files"
+    task_type: "process"
+    exchange: "file_exchange"
+    routing_key: "get_files"
 
   RETURN:
     task_name: "RETURN"

@@ -2,6 +2,11 @@ import asyncio
 
 
 class ResponseUtils:
+    """A class to manage responses from the server, stored as futures in a dictionary
+
+    This class is a singleton, so it can be imported and used anywhere in the app.
+    """
+
     def __init__(self):
         self.responses_pending = {}
 

@@ -54,5 +54,5 @@ def handle_job_request(decoded_message_body):
     pika_utils.publish_message(
         exchange_name=task_attributes.exchange,
         routing_key=task_attributes.routing_key,
-        message=message.encode('utf-8')
+        message=message.encode('utf-8'),
     )

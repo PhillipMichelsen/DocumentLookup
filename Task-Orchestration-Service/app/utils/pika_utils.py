@@ -31,6 +31,7 @@ class PikaUtils:
             retry_delay=10,
         ))
         self.channel = self.connection.channel()
+        self.channel.basic_qos(prefetch_count=settings.prefetch_count)
         self.service_id = str(uuid.uuid4())
 
     def declare_exchanges(self) -> None:
@@ -47,27 +48,31 @@ class PikaUtils:
                 exchange['name'],
                 exchange['type'],
                 durable=exchange.get('durable', False),
-                auto_delete=exchange.get('auto_delete', False)
+                auto_delete=exchange.get('auto_delete', False),
+                arguments={"x-max-priority": 3}
             )
 
             if exchange['name'] == settings.service_exchange:
                 self.service_exchange = exchange['name']
 
     def register_consumer(self, queue_name: str, exchange: str, routing_key: str, on_message_callback,
-                          auto_delete: bool) -> None:
+                          auto_delete: bool, priority: int = 1) -> None:
         """Registers a queue and consumes messages from it
 
+        :param on_message_callback:
         :param queue_name: The name of the queue
         :param exchange: The name of the exchange
         :param routing_key: The routing key
         :param on_message_callback: The callback function to be called when a message is received
-        :param auto_delete: Whether the queue should be deleted when the connection is closed
+        :param auto_delete: Whether the queue should be deleted when the consumer disconnects
+        :param priority: The priority of the queue
         :return: None
         """
         self.channel.queue_declare(
             queue=queue_name,
             durable=False,
             auto_delete=auto_delete
+
         )
 
         self.channel.queue_bind(
@@ -78,7 +83,8 @@ class PikaUtils:
 
         self.channel.basic_consume(
             queue=queue_name,
-            on_message_callback=on_message_callback
+            on_message_callback=on_message_callback,
+            arguments={"x-priority": priority}
         )
 
     def publish_message(self, exchange_name: str, routing_key: str, message: bytes) -> None:
@@ -92,9 +98,10 @@ class PikaUtils:
         self.channel.basic_publish(
             exchange=exchange_name,
             routing_key=routing_key,
-            body=message
+            body=message,
         )
-        print(f"Message published to exchange {exchange_name} with routing key {routing_key}", flush=True)
+        print(f"Message published to exchange {exchange_name} with routing key {routing_key}",
+              flush=True)
 
     def start_consuming(self) -> None:
         """Starts consuming messages from the registered consumers.

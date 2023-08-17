@@ -1,5 +1,3 @@
-
-
 class ResponseHold:
     def __init__(self):
         self.response_hold = {}

@@ -1,12 +1,23 @@
+import json
+
 import yaml
 
+from app.config import settings
 from app.schemas.job_schemas import JobSchema, JobsSchema
-from app.schemas.task_schemas import TaskSchema
+from app.schemas.task_schemas import TaskSchema, TaskClearDataRequest
+from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
 from app.utils.task_utils import task_utils
 
 
 class JobUtils:
+    """Job utilities class
+
+    Handles job-related tasks and functions
+
+    This class should be instantiated as a singleton instance
+    """
+
     def __init__(self):
         self.jobs = {}
 
@@ -65,6 +76,21 @@ class JobUtils:
         task_chain = job.task_chain.split(',')
 
         for task_id in task_chain:
+            task = task_redis.get_stored_task(task_id)
+            task_attributes = task_utils.tasks[task.task_name]
+
+            if task_attributes.task_type == 'process':
+                task_clear_data_request = TaskClearDataRequest(
+                    task_id=task_id
+                )
+
+                message = json.dumps(task_clear_data_request.model_dump())
+                pika_utils.publish_message(
+                    exchange_name=task_attributes.exchange,
+                    routing_key=f'{task.handled_by}_{settings.clear_job_data_queue_routing_key}',
+                    message=message.encode('utf-8')
+                )
+
             task_redis.delete_stored_task(task_id)
 
         job_redis.delete_stored_job(job.job_id)

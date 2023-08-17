@@ -1,4 +1,3 @@
-import mimetypes
 import uuid
 from typing import Tuple
 

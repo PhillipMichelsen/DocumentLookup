@@ -1,4 +1,3 @@
-
 import weaviate
 
 
@@ -58,7 +57,8 @@ class WeaviateUtils:
         :param entry_uuid: UUID of the entry.
         :param vector: Vector to add or update.
         """
-        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid, vector=vector)
+        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid,
+                                              vector=vector)
 
     def delete_entry(self, entry_uuid):
         """

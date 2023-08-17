@@ -7,6 +7,7 @@ class TaskSchema(BaseModel):
     task_name: str
     task_id: str
     job_id: str
+    handled_by: str
     status: str
 
 
@@ -32,13 +33,17 @@ class TaskRouteResponse(BaseModel):
     status: str
 
 
+class TaskRequest(BaseModel):
+    task_id: str
+    job_id: str
+    job_data: str
+
+
 class TaskResponse(BaseModel):
     task_id: str
     service_id: str
     status: str
 
 
-class TaskRequest(BaseModel):
+class TaskClearDataRequest(BaseModel):
     task_id: str
-    job_id: str
-    job_data: str

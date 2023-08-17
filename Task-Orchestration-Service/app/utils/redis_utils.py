@@ -5,6 +5,8 @@ from app.schemas.task_schemas import TaskSchema
 
 
 class JobRedis:
+    """Redis database for jobs"""
+
     def __init__(self):
         self.redis = None
 
@@ -63,6 +65,8 @@ class JobRedis:
 
 
 class TaskRedis:
+    """Redis database for tasks"""
+
     def __init__(self):
         self.redis = None
 
@@ -92,6 +96,15 @@ class TaskRedis:
         :return: None
         """
         self.redis.hset(task_id, 'status', status)
+
+    def update_task_handled_by(self, task_id: str, handled_by: str) -> None:
+        """Updates the status of a task
+
+        :param task_id: The ID of the task to update
+        :param handled_by: The new handled_by
+        :return: None
+        """
+        self.redis.hset(task_id, 'handled_by', handled_by)
 
     def get_stored_task(self, task_id: str) -> TaskSchema:
         """Gets a task

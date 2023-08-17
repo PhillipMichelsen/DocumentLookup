@@ -4,7 +4,7 @@ version: '3.8'
 services:
   api-gateway-core:
     build: ./API-Gateway
-    #container_name: api-gateway-core-service
+    container_name: api-gateway-core-service
     ports:
       - "8000:8000"
     depends_on:
@@ -26,12 +26,25 @@ services:
       replicas: 1
     depends_on:
       - rabbitmq
+      - weaviate
+      - postgres
 
   file-service-core:
     build: ./File-Service
     #container_name: file-core-service
     depends_on:
       - rabbitmq
+      - grobid
+      - minio
+      - postgres
+
+  streamlit-app:
+    build: ./PrototypeFrontEnd
+    #container_name: streamlit-app-service
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api-gateway-core
 
   grobid:
     image: grobid/grobid:0.7.3
@@ -50,7 +63,7 @@ services:
       - MINIO_NOTIFY_AMQP_ENABLE=on
       - MINIO_NOTIFY_AMQP_URL=amqp://admin:admin123@rabbitmq-service:5672
       - MINIO_NOTIFY_AMQP_EXCHANGE=task_orchestrator_exchange
-      - MINIO_NOTIFY_AMQP_ROUTING_KEY=minio_message
+      - MINIO_NOTIFY_AMQP_ROUTING_KEY=minio_put_event
       - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE=direct
 
   weaviate:
@@ -82,7 +95,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=files
+      - POSTGRES_DB=documentlookup
     
   redis:
     image: redis

@@ -2,18 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.listeners.job_response_listener import job_response_callback
-from app.listeners.update_result_listener import update_result_callback
+from app.listeners.job_response_listener import on_message_job_response
+from app.listeners.update_result_listener import on_message_update_result
+from app.routers import core_jobs
 from app.routers import utility_tasks
-from app.routers import core_tasks
 from app.utils.pika_utils import pika_utils
 
 # Create FastAPI app, setup logging
 app = FastAPI()
 
 # Routers
-app.include_router(core_tasks.router, prefix="/core-jobs", tags=["utility-jobs"])
-app.include_router(utility_tasks.router, prefix="/utility-jobs", tags=["utility-jobs"])
+app.include_router(core_jobs.router, prefix="/core-jobs", tags=["core-jobs"])
+app.include_router(utility_tasks.router, prefix="/utility-tasks", tags=["utility-tasks"])
 
 # Middleware
 app.add_middleware(
@@ -41,7 +41,7 @@ async def startup():
         queue_name=f'{pika_utils.service_id}_{settings.job_response_queue}',
         exchange=settings.service_exchange,
         routing_key=f'{pika_utils.service_id}_{settings.job_response_queue_routing_key}',
-        on_message_callback=job_response_callback,
+        on_message_callback=on_message_job_response,
         auto_delete=True
     )
 
@@ -50,7 +50,7 @@ async def startup():
         queue_name=f'{pika_utils.service_id}_{settings.update_result_queue}',
         exchange=settings.service_exchange,
         routing_key=f'{pika_utils.service_id}_{settings.update_result_queue_routing_key}',
-        on_message_callback=update_result_callback,
+        on_message_callback=on_message_update_result,
         auto_delete=True
     )
 

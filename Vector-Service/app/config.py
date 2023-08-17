@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
+    prefetch_count: int = 3
 
     # Exchanges
     service_exchange: str = "vector_exchange"
@@ -42,6 +43,9 @@ class Settings(BaseSettings):
 
     route_request_queue: str = "route_request_queue"
     route_request_queue_routing_key: str = "route_request"
+
+    clear_job_data_queue: str = "clear_job_data_queue"
+    clear_job_data_queue_routing_key: str = "clear_job_data"
 
     # Non-Service Queue Names + Routing Keys
     task_orchestrator_task_response_routing_key: str = "task_response"

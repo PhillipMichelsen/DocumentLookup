@@ -22,9 +22,3 @@ exchanges:
     type: 'direct'
     durable: false
     auto_delete: false
-
-  task_routing_exchange:
-    name: 'task_routing_exchange'
-    type: 'direct'
-    durable: false
-    auto_delete: false

@@ -1,7 +1,8 @@
 import json
 import uuid
+
 from app.config import settings
-from app.schemas.job_schemas import JobRequest, JobResponse
+from app.schemas.job_schemas import JobResponse
 from app.schemas.task_schemas import TaskRequest
 from app.utils.job_utils import job_utils
 from app.utils.pika_utils import pika_utils
@@ -9,7 +10,7 @@ from app.utils.redis_utils import task_redis
 from app.utils.task_utils import task_utils
 
 
-def handle_minio_message(decoded_message_body):
+def handle_minio_put_event(decoded_message_body):
     # No need to validate the message body, Minio sends messages in a predefined format
     job = job_utils.create_job(
         job_name='process_file',

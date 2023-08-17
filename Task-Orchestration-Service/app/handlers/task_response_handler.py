@@ -8,6 +8,8 @@ def handle_task_response(decoded_message_body):
     task_response = TaskResponse.model_validate(decoded_message_body)
     completed_task = task_redis.get_stored_task(task_response.task_id)
 
+    task_redis.update_task_handled_by(task_response.task_id, task_response.service_id)
+
     job_utils.step_up_task_index(completed_task.job_id)
     job = job_redis.get_stored_job(completed_task.job_id)
 

@@ -27,13 +27,6 @@ class TaskRouteRequest(BaseModel):
 
 class TaskRouteResponse(BaseModel):
     task_id: str
-    next_task_id: str
-    service_id: str
-    status: str
-
-
-class TaskResponse(BaseModel):
-    task_id: str
     service_id: str
     status: str
 
@@ -42,3 +35,13 @@ class TaskRequest(BaseModel):
     task_id: str
     job_id: str
     job_data: str
+
+
+class TaskResponse(BaseModel):
+    task_id: str
+    service_id: str
+    status: str
+
+
+class TaskClearDataRequest(BaseModel):
+    task_id: str

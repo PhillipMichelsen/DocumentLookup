@@ -16,6 +16,12 @@ jobs:
       - "store_embedding"
       - "END"
 
+  get_files:
+    tasks:
+      - "get_files"
+      - "RETURN"
+      - "END"
+
   embed_text:
     tasks:
       - "generate_embeddings"
