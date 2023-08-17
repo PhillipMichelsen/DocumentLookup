@@ -41,4 +41,4 @@ class TaskResponse(BaseModel):
 class TaskRequest(BaseModel):
     task_id: str
     job_id: str
-    request_content: str
+    job_data: str

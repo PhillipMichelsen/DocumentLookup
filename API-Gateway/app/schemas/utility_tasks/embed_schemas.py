@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class EmbedRequest(BaseModel):
-    sentences: List[str]
+    text: List[str]
 
 
 class EmbedResponse(BaseModel):

@@ -23,17 +23,23 @@ tasks:
     exchange: "vector_exchange"
     routing_key: "rerank_text"
 
-  store_embeddings_milvus:
-    task_name: "store_embeddings"
+  store_embedding:
+    task_name: "store_embedding"
     task_type: "process"
     exchange: "vector_exchange"
-    routing_key: "store_embeddings"
+    routing_key: "store_embedding"
 
-  store_text_weaviate:
-    task_name: "store_text_weaviate"
+  retrieve_closest_entries:
+    task_name: "retrieve_closest_entries"
+    task_type: "process"
+    exchange: "vector_exchange"
+    routing_key: "retrieve_closest_entries"
+
+  get_files:
+    task_name: "get_files"
     task_type: "process"
     exchange: "file_exchange"
-    routing_key: "store_text"
+    routing_key: "get_files"
 
   RETURN:
     task_name: "RETURN"

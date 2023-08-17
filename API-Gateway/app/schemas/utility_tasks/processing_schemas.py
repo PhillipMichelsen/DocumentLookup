@@ -11,4 +11,3 @@ class ProcessFileRequest(BaseModel):
 
 class ProcessFileResponse(BaseModel):
     paragraphs: List[str]
-    sentences: List[str]

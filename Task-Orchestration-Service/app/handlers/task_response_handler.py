@@ -6,9 +6,9 @@ from app.utils.task_utils import task_utils
 
 def handle_task_response(decoded_message_body):
     task_response = TaskResponse.model_validate(decoded_message_body)
-    print(f"Task response received: {task_response}", flush=True)
-
     completed_task = task_redis.get_stored_task(task_response.task_id)
+
+    task_redis.update_task_handled_by(task_response.task_id, task_response.service_id)
 
     job_utils.step_up_task_index(completed_task.job_id)
     job = job_redis.get_stored_job(completed_task.job_id)
@@ -22,3 +22,5 @@ def handle_task_response(decoded_message_body):
         task_utils.route_return_task(completed_task, next_task, job, task_response.service_id)
     elif next_task_type == "end":
         job_utils.delete_job(job)
+    else:
+        raise Exception(f"Unknown task type: {next_task_type}")

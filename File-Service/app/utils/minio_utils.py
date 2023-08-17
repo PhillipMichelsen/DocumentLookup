@@ -1,4 +1,3 @@
-import mimetypes
 import uuid
 from typing import Tuple
 
@@ -28,7 +27,6 @@ class MinioUtils:
         """Generates a presigned upload URL and returns it along with a generated UUID for the object.
 
         :param bucket_name: The name of the bucket
-        :param task_id: The id of the task
         :param filename: The original filename of the object
         :return: Presigned upload URL and object UUID
         """

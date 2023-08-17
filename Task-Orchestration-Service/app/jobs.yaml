@@ -10,6 +10,18 @@ jobs:
       - "process_file"
       - "END"
 
+  embed_store_text:
+    tasks:
+      - "generate_embeddings"
+      - "store_embedding"
+      - "END"
+
+  get_files:
+    tasks:
+      - "get_files"
+      - "RETURN"
+      - "END"
+
   embed_text:
     tasks:
       - "generate_embeddings"
@@ -18,6 +30,20 @@ jobs:
 
   rerank_text:
     tasks:
+      - "rerank_text"
+      - "RETURN"
+      - "END"
+
+  retrieve_closest_entries:
+    tasks:
+      - "retrieve_closest_entries"
+      - "RETURN"
+      - "END"
+
+  retrieve_query_context:
+    tasks:
+      - "generate_embeddings"
+      - "retrieve_closest_entries"
       - "rerank_text"
       - "RETURN"
       - "END"

@@ -7,28 +7,26 @@ class Settings(BaseSettings):
     # --- Core service settings ---
     service_name: str = "task_orchestrator_service"
 
+    redis_host: str = "redis-service"
+    redis_port: int = 6379
+
     # --- RabbitMQ settings ---
     rabbitmq_host: str = "rabbitmq-service"
     rabbitmq_username: str = "admin"
     rabbitmq_password: str = "admin123"
+    prefetch_count: int = 3
 
+    # Exchanges
     service_exchange: str = "task_orchestrator_exchange"
     gateway_exchange: str = "gateway_exchange"
     task_routing_exchange: str = "task_routing_exchange"
-
-    # Non-Service Queue Names + Routing Keys
-    route_request_queue: str = "route_request_queue"
-    route_request_queue_routing_key: str = "route_request"
-
-    job_response_queue: str = "job_response_queue"
-    job_response_queue_routing_key: str = "job_response"
 
     # Service Queue Names + Routing Keys
     job_request_queue: str = "job_request_queue"
     job_request_queue_routing_key: str = "job_request"
 
-    minio_message_queue: str = "minio_message_queue"
-    minio_message_queue_routing_key: str = "minio_message"
+    minio_put_event_queue: str = "minio_put_event_queue"
+    minio_put_event_queue_routing_key: str = "minio_put_event"
 
     task_response_queue: str = "task_response_queue"
     task_response_queue_routing_key: str = "task_response"
@@ -36,14 +34,18 @@ class Settings(BaseSettings):
     task_route_response_queue: str = "task_route_response_queue"
     task_route_response_queue_routing_key: str = "task_route_response"
 
-    # --- Redis settings ---
-    redis_host: str = "redis-service"
-    redis_port: int = 6379
+    task_clear_data_response_queue: str = "task_clear_data_response_queue"
+    task_clear_data_response_queue_routing_key: str = "task_clear_data_response"
 
-    # --- YAML Files ---
-    task_file: str = "app/tasks.yaml"
-    job_file: str = "app/jobs.yaml"
-    exchanges_file: str = "app/exchanges.yaml"
+    # Non-Service Queue Names + Routing Keys
+    route_request_queue: str = "route_request_queue"
+    route_request_queue_routing_key: str = "route_request"
+
+    clear_job_data_queue: str = "clear_job_data_queue"
+    clear_job_data_queue_routing_key: str = "clear_job_data"
+
+    job_response_queue: str = "job_response_queue"
+    job_response_queue_routing_key: str = "job_response"
 
 
 # Create instances
