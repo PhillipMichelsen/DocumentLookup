@@ -38,6 +38,12 @@ services:
       - minio
       - postgres
 
+  chat-service-core:
+    build: ./Chat-Service
+    #container_name: file-core-service
+    depends_on:
+      - rabbitmq
+
   streamlit-app:
     build: ./PrototypeFrontEnd
     #container_name: streamlit-app-service

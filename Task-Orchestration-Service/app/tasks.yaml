@@ -35,6 +35,12 @@ tasks:
     exchange: "vector_exchange"
     routing_key: "retrieve_closest_entries"
 
+  chat_completion:
+    task_name: "chat_completion"
+    task_type: "process"
+    exchange: "chat_exchange"
+    routing_key: "chat_completion"
+
   get_files:
     task_name: "get_files"
     task_type: "process"

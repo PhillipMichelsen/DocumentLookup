@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     weaviate_host: str = "weaviate-service"
     weaviate_port: str = "8080"
 
-    embedding_model: str = "embedding_models/all-MiniLM-L6-v2"
+    embedding_model: str = "embedding_models/multi-qa-mpnet-base-dot-v1"
     cross_encoding_model: str = "embedding_models/ms-marco-MiniLM-L-12-v2"
     # embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     # cross_encoding_model: str = "cross-encoder/ms-marco-MiniLM-L-12-v2"

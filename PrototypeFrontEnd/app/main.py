@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
-from app.schemas import RetrieveQueryContextRequest, RetrieveQueryContextResponse, GetFilesRequest, GetFilesResponse
+from app.schemas import RetrieveQueryContextRequest, RetrieveQueryContextResponse, GetFilesRequest, GetFilesResponse, AnswerQuestionRequest, AnswerQuestionResponse
 
 with st.sidebar:
     uploaded_files = st.file_uploader("Choose files to upload (optional)", accept_multiple_files=True)
@@ -43,27 +43,23 @@ with st.sidebar:
         st.write(files_df)
 
 query = st.text_input("Enter your query:")
-top_n = st.number_input("Top N:", min_value=1, max_value=50, value=20)
-type_filter = st.radio("Type Filter:", options=["paragraph", "div"])
-document_id = st.text_input("Document ID:")
 
 # Button to initiate the request
-if st.button("Retrieve Query Context"):
+if st.button("Get answer!"):
     # Build the request object
-    request_data = RetrieveQueryContextRequest(
+    request_data = AnswerQuestionRequest(
         text=[query],
         query=query,
-        top_n=top_n,
-        type_filter=type_filter,
-        document_id=document_id,
+        top_n=15,
+        type_filter='paragraph',
+        document_id='',
     )
 
     # Make the API call
-    response = requests.post("http://api-gateway-core-service:8000/core-jobs/retrieve-query-context", json=request_data.model_dump())
-    print(f'Request made to http://api-gateway-core-service:8000/core-jobs/retrieve-query-context with data: {request_data.model_dump()}')
+    response = requests.post("http://api-gateway-core-service:8000/core-jobs/answer-question", json=request_data.model_dump())
+    print(f'Request made to http://api-gateway-core-service:8000/core-jobs/answer-question with data: {request_data.model_dump()}')
 
     # Display the results
-    response_data = RetrieveQueryContextResponse(**response.json())
-    st.write("Results:")
-    for entry in response_data.ranked_entries:
-        st.markdown(f"- {entry}")
+    response_data = AnswerQuestionResponse.model_validate(response.json())
+    st.markdown("**Response:**")
+    st.markdown(response_data.chat_completion)

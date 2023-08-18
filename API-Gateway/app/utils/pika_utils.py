@@ -24,7 +24,7 @@ class PikaUtilsAsync:
             host=host,
             login=username,
             password=password,
-            timeout=10
+            timeout=30
         )
         self.channel = await self.connection.channel()
 
