@@ -2,7 +2,7 @@ import json
 
 from fastapi import APIRouter
 
-from app.schemas.core_tasks import embed_store_schemas, retrieve_query_context_schemas, get_files_schemas
+from app.schemas.core_tasks import embed_store_schemas, retrieve_query_context_schemas, get_files_schemas, answer_question_schemas
 from app.utils.service_utils import job_request_response
 
 router = APIRouter()
@@ -35,3 +35,12 @@ async def route_retrieve_query_context(request: retrieve_query_context_schemas.R
 async def route_get_files(request: get_files_schemas.GetFilesRequest):
     response = await job_request_response(request, "get_files")
     return get_files_schemas.GetFilesResponse.model_validate(json.loads(response))
+
+
+@router.post(path='/answer-question',
+             name='Answer Question',
+             description='Answer a question based on the given context',
+             response_model=answer_question_schemas.AnswerQuestionResponse)
+async def route_answer_question(request: answer_question_schemas.AnswerQuestionRequest):
+    response = await job_request_response(request, "answer_question")
+    return answer_question_schemas.AnswerQuestionResponse.model_validate(json.loads(response))

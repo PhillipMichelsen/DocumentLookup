@@ -21,21 +21,19 @@ def handle_process_file(decoded_message_body):
     object_name = process_file_request.Records[0]['s3']['object']['key']
     bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
 
-    file_data = {
-        "document_id": object_name,
-        "original_file_name": 'test.pdf',
-        "user_id": 'testing',
-        "total_entries": 0,
-        "entries_processed": 0
-    }
-
-    postgres_utils.add_file(file_data)
-
     grobid_output = grobid_fulltext_pdf(bucket_name, object_name)
     divs, paragraphs = parse_grobid_output(grobid_output)
     entries = len(divs) + len(paragraphs)
 
-    postgres_utils.increment_total_entries(object_name, entries)
+    file_data = {
+        "document_id": object_name,
+        "original_file_name": 'test.pdf',
+        "user_id": 'testing',
+        "total_entries": entries,
+        "entries_processed": 0
+    }
+
+    postgres_utils.add_file(file_data)
 
     def process_items(items, item_type):
         for i in range(0, len(items), settings.batch_size):
