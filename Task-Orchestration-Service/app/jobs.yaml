@@ -8,12 +8,7 @@ jobs:
   process_file:
     tasks:
       - "process_file"
-      - "END"
-
-  embed_store_text:
-    tasks:
-      - "generate_embeddings"
-      - "store_embedding"
+      - "add_entries"
       - "END"
 
   get_files:
@@ -22,37 +17,15 @@ jobs:
       - "RETURN"
       - "END"
 
+  retrieve_context:
+    tasks:
+      - "retrieve_context"
+      - "RETURN"
+      - "END"
+
   answer_question:
     tasks:
-      - "generate_embeddings"
-      - "retrieve_closest_entries"
-      - "rerank_text"
+      - "retrieve_context"
       - "chat_completion"
-      - "RETURN"
-      - "END"
-
-  embed_text:
-    tasks:
-      - "generate_embeddings"
-      - "RETURN"
-      - "END"
-
-  rerank_text:
-    tasks:
-      - "rerank_text"
-      - "RETURN"
-      - "END"
-
-  retrieve_closest_entries:
-    tasks:
-      - "retrieve_closest_entries"
-      - "RETURN"
-      - "END"
-
-  retrieve_query_context:
-    tasks:
-      - "generate_embeddings"
-      - "retrieve_closest_entries"
-      - "rerank_text"
       - "RETURN"
       - "END"

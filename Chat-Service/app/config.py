@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     chat_completion_queue: str = "chat_completion_queue"
     chat_completion_queue_routing_key: str = "chat_completion"
 
+    retrieve_context_queue: str = "retrieve_context_queue"
+    retrieve_context_queue_routing_key: str = "retrieve_context"
+
     # Non-Service Queue Names + Routing Keys
     task_orchestrator_task_response_routing_key: str = "task_response"
     task_orchestrator_task_route_response_routing_key: str = "task_route_response"

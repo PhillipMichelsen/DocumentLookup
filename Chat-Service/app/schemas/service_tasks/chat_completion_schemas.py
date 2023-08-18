@@ -3,7 +3,7 @@ from typing import List
 
 
 class ChatCompletionRequest(BaseModel):
-    ranked_entries: List[str]
+    context: List[str]
     query: str
 
 

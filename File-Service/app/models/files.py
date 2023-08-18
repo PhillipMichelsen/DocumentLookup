@@ -1,5 +1,7 @@
 from pydantic import BaseModel
+from typing import List
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -13,7 +15,7 @@ class File(Base):
     original_file_name = Column(String)
     user_id = Column(String)
     total_entries = Column(Integer)
-    entries_processed = Column(Integer)
+    weaviate_uuids = Column(ARRAY(String))
 
 
 class FileSchema(BaseModel):
@@ -21,4 +23,4 @@ class FileSchema(BaseModel):
     original_file_name: str
     user_id: str
     total_entries: int
-    entries_processed: int
+    weaviate_uuids: List[str]

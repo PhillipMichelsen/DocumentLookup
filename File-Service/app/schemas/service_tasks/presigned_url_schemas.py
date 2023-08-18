@@ -6,4 +6,4 @@ class PresignedURLUploadRequest(BaseModel):
 
 
 class PresignedURLUploadResponse(BaseModel):
-    presigned_url: str
+    presigned_url_upload: str

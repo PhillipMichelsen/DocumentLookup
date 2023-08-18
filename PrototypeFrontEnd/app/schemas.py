@@ -1,30 +1,25 @@
+from pydantic import BaseModel
 from typing import List
 
-from pydantic import BaseModel
+
+class GeneratePresignedURLUploadRequest(BaseModel):
+    filename: str
 
 
-class RetrieveQueryContextRequest(BaseModel):
-    text: List[str]
-    query: str
-    top_n: int = 20
-    type_filter: str = "div"
-    document_id: str = None
-
-
-class RetrieveQueryContextResponse(BaseModel):
-    ranked_entries: List[str]
+class GeneratePresignedURLUploadResponse(BaseModel):
+    presigned_url_upload: str
 
 
 class AnswerQuestionRequest(BaseModel):
-    text: List[str]
     query: str
-    top_n: int = 20
-    type_filter: str = "div"
-    document_id: str = None
+    top_n: int
+    text_type: str
+    document_id: str
 
 
 class AnswerQuestionResponse(BaseModel):
     chat_completion: str
+    context: List[str]
 
 
 class GetFilesRequest(BaseModel):

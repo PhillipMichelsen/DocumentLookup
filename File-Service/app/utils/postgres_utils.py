@@ -24,18 +24,19 @@ class PostgresUtils:
             session.add(file_record)
             session.commit()
 
-    def increment_entries_processed(self, document_id, increment_by=1):
+    def append_weaviate_uuids(self, document_id: str, uuids_to_append: List[str]) -> None:
         with self.Session() as session:
-            file_record = session.query(File).filter_by(document_id=document_id).first()
-            if file_record:
-                file_record.entries_processed += increment_by
-                session.commit()
+            # Get the file entry from the database
+            file_entry = session.query(File).filter_by(document_id=document_id).first()
 
-    def increment_total_entries(self, document_id, increment_by=1):
-        with self.Session() as session:
-            file_record = session.query(File).filter_by(document_id=document_id).first()
-            if file_record:
-                file_record.total_entries += increment_by
+            # If the file is found, append the UUIDs
+            if file_entry:
+                if file_entry.weaviate_uuids is None:
+                    file_entry.weaviate_uuids = []
+
+                file_entry.weaviate_uuids.extend(uuids_to_append)
+
+                # Commit the changes to the database
                 session.commit()
 
     def get_file_by_document_id(self, document_id: str) -> FileSchema:

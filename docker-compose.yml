@@ -19,16 +19,6 @@ services:
       - rabbitmq
       - redis
 
-  vector-service-core:
-    build: ./Vector-Service
-    #container_name: vector-core-service
-    deploy:
-      replicas: 1
-    depends_on:
-      - rabbitmq
-      - weaviate
-      - postgres
-
   file-service-core:
     build: ./File-Service
     #container_name: file-core-service
@@ -53,10 +43,12 @@ services:
       - api-gateway-core
 
   grobid:
-    image: grobid/grobid:0.7.3
+    image: lfoppiano/grobid:0.7.3
     container_name: grobid-service
     ports:
       - "8070:8070"
+    volumes:
+      - "./grobid.yaml:/opt/grobid/grobid-home/config/grobid.yaml:ro"
 
   minio:
     image: minio/minio
@@ -80,8 +72,15 @@ services:
     environment:
       AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
       PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
-      DEFAULT_VECTORIZER_MODULE: 'none'
+      DEFAULT_VECTORIZER_MODULE: text2vec-transformers
+      ENABLE_MODULES: text2vec-transformers
+      TRANSFORMERS_INFERENCE_API: http://weaviate-sentence-transformers:8080
       CLUSTER_HOSTNAME: 'node1'
+
+  weaviate-sentence-transformers:
+    image: semitechnologies/transformers-inference:sentence-transformers-multi-qa-distilbert-cos-v1
+    environment:
+      ENABLE_CUDA: 0
 
   rabbitmq:
     image: rabbitmq:3-management

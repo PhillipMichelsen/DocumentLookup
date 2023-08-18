@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
-from app.schemas import RetrieveQueryContextRequest, RetrieveQueryContextResponse, GetFilesRequest, GetFilesResponse, AnswerQuestionRequest, AnswerQuestionResponse
+from app.schemas import GeneratePresignedURLUploadRequest, GeneratePresignedURLUploadResponse, GetFilesRequest, GetFilesResponse, AnswerQuestionRequest, AnswerQuestionResponse
 
 with st.sidebar:
     uploaded_files = st.file_uploader("Choose files to upload (optional)", accept_multiple_files=True)
@@ -12,9 +12,9 @@ with st.sidebar:
         # Requesting presigned URLs for all files first
         presigned_urls = []
         for uploaded_file in uploaded_files:
-            presigned_url_response = requests.post("http://api-gateway-core-service:8000/utility-tasks/generate-presigned-url-upload",
-                                                   json={"filename": uploaded_file.name})
-            presigned_url = presigned_url_response.json().get("presigned_url")
+            presigned_url_response = requests.post("http://api-gateway-core-service:8000/core-jobs/generate-presigned-url-upload",
+                                                   json=GeneratePresignedURLUploadRequest(filename=uploaded_file.name).model_dump())
+            presigned_url = GeneratePresignedURLUploadResponse.model_validate(presigned_url_response.json()).presigned_url_upload
             presigned_urls.append((uploaded_file, presigned_url))
 
         # Uploading files to the presigned URLs
@@ -48,10 +48,9 @@ query = st.text_input("Enter your query:")
 if st.button("Get answer!"):
     # Build the request object
     request_data = AnswerQuestionRequest(
-        text=[query],
         query=query,
-        top_n=15,
-        type_filter='paragraph',
+        top_n=10,
+        text_type='paragraph',
         document_id='',
     )
 
@@ -63,3 +62,8 @@ if st.button("Get answer!"):
     response_data = AnswerQuestionResponse.model_validate(response.json())
     st.markdown("**Response:**")
     st.markdown(response_data.chat_completion)
+
+    st.markdown("**Context:**")
+    for i, context in enumerate(response_data.context):
+        st.markdown(f"[{i+1}] {context}")
+

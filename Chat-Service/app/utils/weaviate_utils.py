@@ -1,4 +1,5 @@
 import weaviate
+from typing import List
 
 
 class WeaviateUtils:
@@ -20,7 +21,7 @@ class WeaviateUtils:
                 },
                 {
                     "name": "type",
-                    "description": "The type of the text, either paragraph or sentence",
+                    "description": "The type of the text, either div or paragraph",
                     "dataType": ["text"]
                 },
                 {
@@ -28,14 +29,13 @@ class WeaviateUtils:
                     "description": "The ID of the document the text belongs to",
                     "dataType": ["text"]
                 }
-            ],
-            "vectorizer": "none"
+            ]
         }
 
         if not self.client.schema.contains():
             self.client.schema.create_class(class_object)
 
-    def add_entry(self, text: str, text_type: str, document_id: str):
+    def add_entries(self, text: List[str], text_type: str, document_id: str) -> List[str]:
         """
         Add an entry to Weaviate.
 
@@ -43,30 +43,31 @@ class WeaviateUtils:
         :param text_type: Type of the text (paragraph, sentence).
         :param document_id: UUID of the document in Minio.
         """
-        obj = {
-            "text": text,
-            "type": text_type,
-            "documentID": document_id,
-        }
-        return self.client.data_object.create(data_object=obj, class_name=self.class_name)
+        data_objects = []
+        uuids = []
+        for t in text:
+            data_objects.append({
+                "text": t,
+                "type": text_type,
+                "documentID": document_id,
+            })
 
-    def add_vector_to_entry(self, entry_uuid, vector):
-        """
-        Update an entry in Weaviate by adding or updating a vector.
+        with self.client.batch(
+            dynamic=True
+        ) as batch:
+            for data_object in data_objects:
+                uuids.append(batch.add_data_object(data_object=data_object, class_name=self.class_name))
 
-        :param entry_uuid: UUID of the entry.
-        :param vector: Vector to add or update.
-        """
-        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid,
-                                              vector=vector)
+        return uuids
 
-    def retrieve_closest_entries(self, vector, top_n, type_filter, document_id):
+    def retrieve_closest_entries(self, query: str, top_n: int, type_filter: str, document_id: str):
         query = (
             self.client.query
             .get("Text", ["text"])
-            .with_near_vector({
-                "vector": vector
+            .with_near_text({
+                "concepts": [query],
             })
+            .with_additional("distance")
             .with_limit(top_n)
             .with_where({
                 "path": ["type"],
@@ -75,6 +76,7 @@ class WeaviateUtils:
             })
         )
 
+        """
         if document_id:
             query = query.with_where([
                 {
@@ -88,6 +90,7 @@ class WeaviateUtils:
                     "valueText": type_filter
                 }
             ])
+        """
 
         response = query.do()
 

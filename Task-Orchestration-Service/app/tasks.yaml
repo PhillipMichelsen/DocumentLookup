@@ -11,29 +11,17 @@ tasks:
     exchange: "file_exchange"
     routing_key: "process_file"
 
-  generate_embeddings:
-    task_name: "generate_embeddings"
+  retrieve_context:
+    task_name: "retrieve_context"
     task_type: "process"
-    exchange: "vector_exchange"
-    routing_key: "embed_text"
+    exchange: "chat_exchange"
+    routing_key: "retrieve_context"
 
-  rerank_text:
-    task_name: "rerank_text"
+  add_entries:
+    task_name: "add_entries"
     task_type: "process"
-    exchange: "vector_exchange"
-    routing_key: "rerank_text"
-
-  store_embedding:
-    task_name: "store_embedding"
-    task_type: "process"
-    exchange: "vector_exchange"
-    routing_key: "store_embedding"
-
-  retrieve_closest_entries:
-    task_name: "retrieve_closest_entries"
-    task_type: "process"
-    exchange: "vector_exchange"
-    routing_key: "retrieve_closest_entries"
+    exchange: "file_exchange"
+    routing_key: "add_entries"
 
   chat_completion:
     task_name: "chat_completion"

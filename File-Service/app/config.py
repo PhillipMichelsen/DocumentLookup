@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     service_exchange: str = "file_exchange"
     task_orchestrator_exchange: str = "task_orchestrator_exchange"
 
-    # Queue Names + Routing Keys\
+    # Queue Names + Routing Keys
     file_queue_presigned_url_upload: str = "file_queue_presigned_url_upload"
     file_queue_presigned_url_upload_routing_key: str = "presigned_url_upload"
 
@@ -41,6 +41,9 @@ class Settings(BaseSettings):
 
     get_files_queue: str = "get_files_queue"
     get_files_queue_routing_key: str = "get_files"
+
+    add_entries_queue: str = "add_entries_queue"
+    add_entries_queue_routing_key: str = "add_entries"
 
     # Non-Service Queue Names + Routing Keys
     task_orchestrator_task_response_routing_key: str = "task_response"

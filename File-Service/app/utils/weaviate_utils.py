@@ -1,5 +1,5 @@
 import weaviate
-
+from typing import List
 
 class WeaviateUtils:
     def __init__(self):
@@ -28,8 +28,7 @@ class WeaviateUtils:
                     "description": "The ID of the document the text belongs to",
                     "dataType": ["text"]
                 }
-            ],
-            "vectorizer": "none"
+            ]
         }
 
         if not self.client.schema.contains():
@@ -50,15 +49,30 @@ class WeaviateUtils:
         }
         return self.client.data_object.create(data_object=obj, class_name=self.class_name)
 
-    def add_vector_to_entry(self, entry_uuid, vector):
+    def batch_add_entries(self, text: List[str], text_type: str, document_id: str) -> List[str]:
         """
-        Update an entry in Weaviate by adding or updating a vector.
+        Add an entry to Weaviate.
 
-        :param entry_uuid: UUID of the entry.
-        :param vector: Vector to add or update.
+        :param text: Text content.
+        :param text_type: Type of the text (paragraph, sentence).
+        :param document_id: UUID of the document in Minio.
         """
-        return self.client.data_object.update(data_object={}, class_name=self.class_name, uuid=entry_uuid,
-                                              vector=vector)
+        data_objects = []
+        uuids = []
+        for t in text:
+            data_objects.append({
+                "text": t,
+                "type": text_type,
+                "documentID": document_id,
+            })
+
+        with self.client.batch(
+            batch_size=15
+        ) as batch:
+            for data_object in data_objects:
+                uuids.append(batch.add_data_object(data_object=data_object, class_name=self.class_name))
+
+        return uuids
 
     def delete_entry(self, entry_uuid):
         """

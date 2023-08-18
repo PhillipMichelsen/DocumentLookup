@@ -29,6 +29,7 @@ class PikaUtils:
             credentials=pika.PlainCredentials(username, password),
             connection_attempts=10,
             retry_delay=10,
+            heartbeat=0
         ))
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count=settings.prefetch_count)

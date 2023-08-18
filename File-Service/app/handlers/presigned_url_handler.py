@@ -16,6 +16,6 @@ def handle_get_presigned_url_upload(decoded_message_body):
         filename=presigned_url_upload_request.filename
     )
 
-    presigned_url_response = PresignedURLUploadResponse(presigned_url=presigned_url_upload)
+    presigned_url_response = PresignedURLUploadResponse(presigned_url_upload=presigned_url_upload)
 
     send_handler_messages(task_request.task_id, job_data, presigned_url_response)

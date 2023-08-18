@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from pydantic import BaseModel
 
@@ -10,4 +10,4 @@ class ProcessFileRequest(BaseModel):
 
 
 class ProcessFileResponse(BaseModel):
-    paragraphs: List[str]
+    entries: List[Tuple[List[str], str, str]]

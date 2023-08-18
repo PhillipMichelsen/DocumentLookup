@@ -4,6 +4,7 @@ from app.listeners.file_presigned_url_listener import on_message_get_presigned_u
 from app.listeners.file_processing_listener import on_message_process_file
 from app.listeners.get_files_listener import on_message_get_files
 from app.listeners.route_request_listener import on_message_route_request
+from app.listeners.add_entries_listener import on_message_add_entries
 from app.utils.minio_utils import minio_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.postgres_utils import postgres_utils
@@ -40,6 +41,7 @@ pika_utils.register_consumer(
     auto_delete=False
 )
 
+# Register process file consumer
 pika_utils.register_consumer(
     queue_name=settings.file_queue_process_file,
     exchange=settings.service_exchange,
@@ -48,6 +50,17 @@ pika_utils.register_consumer(
     auto_delete=False
 )
 
+# Register add entries consumer
+pika_utils.register_consumer(
+    queue_name=settings.add_entries_queue,
+    exchange=settings.service_exchange,
+    routing_key=settings.add_entries_queue_routing_key,
+    on_message_callback=on_message_add_entries,
+    auto_delete=False,
+    priority=5
+)
+
+# Register get files consumer
 pika_utils.register_consumer(
     queue_name=settings.get_files_queue,
     exchange=settings.service_exchange,
@@ -63,7 +76,8 @@ pika_utils.register_consumer(
     exchange=settings.service_exchange,
     routing_key=f'{pika_utils.service_id}_{settings.route_request_queue_routing_key}',
     on_message_callback=on_message_route_request,
-    auto_delete=True
+    auto_delete=True,
+    priority=10
 )
 
 # Register clear job data consumer

@@ -2,7 +2,11 @@ from app.config import settings
 from app.listeners.clear_job_data_listener import on_message_clear_job_data
 from app.listeners.route_request_listener import on_message_route_request
 from app.listeners.chat_completion_listener import on_message_chat_completion
+from app.listeners.retrieve_context_listener import on_message_retrieve_context
+from app.utils.weaviate_utils import weaviate_utils
 from app.utils.pika_utils import pika_utils
+
+weaviate_utils.init_connection('weaviate-service', 8080)
 
 # Prepare pika connection and declare exchanges
 pika_utils.init_connection(
@@ -20,6 +24,15 @@ pika_utils.register_consumer(
     on_message_callback=on_message_chat_completion,
     auto_delete=False
 )
+
+pika_utils.register_consumer(
+    queue_name=settings.retrieve_context_queue,
+    exchange=settings.service_exchange,
+    routing_key=settings.retrieve_context_queue_routing_key,
+    on_message_callback=on_message_retrieve_context,
+    auto_delete=False
+)
+
 
 # Register consumer for route request
 pika_utils.register_consumer(
