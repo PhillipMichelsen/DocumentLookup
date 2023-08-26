@@ -1,11 +1,14 @@
 from pydantic import BaseModel
-from typing import List
+from typing import Optional, List, Tuple
 
 
 class ChatCompletionRequest(BaseModel):
-    context: List[str]
-    query: str
+    context: Optional[List[str]] = None
+    messages: Optional[List[dict]] = None
+    user_query: str
 
 
 class ChatCompletionResponse(BaseModel):
-    chat_completion: str
+    chat_completion: Optional[str] = None
+    context_query: Optional[str] = None
+    messages: List[dict]

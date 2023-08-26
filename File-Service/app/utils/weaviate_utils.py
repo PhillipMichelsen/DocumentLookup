@@ -74,6 +74,57 @@ class WeaviateUtils:
 
         return uuids
 
+    def retrieve_count_by_document_id(self, document_id: str):
+        query = (
+            self.client.query
+            .aggregate("Text")
+            .with_where({
+                "path": ["documentID"],
+                "operator": "Equal",
+                "valueString": document_id
+            })
+            .with_meta_count()
+        )
+
+        response = query.do()
+
+        return response['data']['Aggregate']['Text'][0]['meta']['count']
+
+    def retrieve_closest_entries(self, query: str, top_n: int, type_filter: str, document_id: str):
+        query = (
+            self.client.query
+            .get("Text", ["text"])
+            .with_near_text({
+                "concepts": [query],
+            })
+            .with_limit(top_n)
+            .with_where({
+                "path": ["type"],
+                "operator": "Equal",
+                "valueText": type_filter
+            })
+        )
+
+        """
+        if document_id:
+            query = query.with_where([
+                {
+                    "path": ["documentID"],
+                    "operator": "Equal",
+                    "valueString": document_id
+                },
+                {
+                    "path": ["type"],
+                    "operator": "Equal",
+                    "valueText": type_filter
+                }
+            ])
+        """
+
+        response = query.do()
+
+        return response
+
     def delete_entry(self, entry_uuid):
         """
         Delete an entry from Weaviate by UUID.

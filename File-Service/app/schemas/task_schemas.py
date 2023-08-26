@@ -7,6 +7,7 @@ class TaskSchema(BaseModel):
     task_name: str
     task_id: str
     job_id: str
+    handled_by: str
     status: str
 
 

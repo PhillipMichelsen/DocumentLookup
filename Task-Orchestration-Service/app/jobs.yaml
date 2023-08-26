@@ -25,7 +25,6 @@ jobs:
 
   answer_question:
     tasks:
-      - "retrieve_context"
       - "chat_completion"
       - "RETURN"
       - "END"

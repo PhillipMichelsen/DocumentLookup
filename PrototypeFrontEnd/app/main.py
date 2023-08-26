@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import streamlit as st
+import re
 
 from app.schemas import GeneratePresignedURLUploadRequest, GeneratePresignedURLUploadResponse, GetFilesRequest, GetFilesResponse, AnswerQuestionRequest, AnswerQuestionResponse
 
@@ -48,7 +49,7 @@ query = st.text_input("Enter your query:")
 if st.button("Get answer!"):
     # Build the request object
     request_data = AnswerQuestionRequest(
-        query=query,
+        user_query=query,
         top_n=10,
         text_type='paragraph',
         document_id='',
@@ -58,12 +59,20 @@ if st.button("Get answer!"):
     response = requests.post("http://api-gateway-core-service:8000/core-jobs/answer-question", json=request_data.model_dump())
     print(f'Request made to http://api-gateway-core-service:8000/core-jobs/answer-question with data: {request_data.model_dump()}')
 
-    # Display the results
     response_data = AnswerQuestionResponse.model_validate(response.json())
+
+    def make_citations_blue(text):
+        return re.sub(r'(\[\d+\])', r'<span style="color:#B9B4C7;">\1</span>', text)
+
+    # Modify the response text using the function
+    blue_citations_text = make_citations_blue(response_data.chat_completion)
+    # Render the modified HTML in Streamlit
     st.markdown("**Response:**")
-    st.markdown(response_data.chat_completion)
+    st.markdown(blue_citations_text, unsafe_allow_html=True)
 
     st.markdown("**Context:**")
     for i, context in enumerate(response_data.context):
-        st.markdown(f"[{i+1}] {context}")
+        st.markdown(f'<span style="font-size: 10px;">[{i + 1}] {context}</span>', unsafe_allow_html=True)
+
+
 

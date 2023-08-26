@@ -20,21 +20,22 @@ def handle_process_file(decoded_message_body):
     bucket_name = process_file_request.Records[0]['s3']['bucket']['name']
 
     grobid_output = grobid_fulltext_pdf(bucket_name, object_name)
-    divs, paragraphs = parse_grobid_output(grobid_output)
-    entry_count = len(divs) + len(paragraphs)
+    paragraphs = parse_grobid_output(grobid_output)
+    entry_count = len(paragraphs)
 
     file_data = {
         "document_id": object_name,
         "original_file_name": 'test.pdf',
         "user_id": 'testing',
         "total_entries": entry_count,
+        "weaviate_uuids": []
     }
 
     postgres_utils.add_file(file_data)
 
     entries = [
         (paragraphs, 'paragraph', object_name),
-        (divs, 'div', object_name)
+        # (divs, 'div', object_name)
     ]
 
     process_file_response = ProcessFileResponse(entries=entries)

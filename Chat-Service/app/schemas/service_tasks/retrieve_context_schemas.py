@@ -1,12 +1,12 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional, Tuple
 
 
 class RetrieveContextRequest(BaseModel):
-    query: str
+    context_query: str
     top_n: int
-    text_type: str
-    document_id: str
+    text_type: Optional[str] = 'paragraph'
+    document_ids: Optional[List[str]] = None
 
 
 class RetrieveContextResponse(BaseModel):

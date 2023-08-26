@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
@@ -23,4 +23,4 @@ class FileSchema(BaseModel):
     original_file_name: str
     user_id: str
     total_entries: int
-    weaviate_uuids: List[str]
+    weaviate_uuids: Optional[List[str]] = None

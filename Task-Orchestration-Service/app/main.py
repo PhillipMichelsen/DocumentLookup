@@ -3,6 +3,7 @@ from app.listeners.job_request_listener import on_message_job_request
 from app.listeners.minio_put_event_listener import on_message_minio_put_event
 from app.listeners.task_response_listener import on_message_task_response
 from app.listeners.task_route_response_listener import on_message_task_route_response
+from app.listeners.add_tasks_to_job_listener import on_message_add_tasks_to_job
 from app.utils.job_utils import job_utils
 from app.utils.pika_utils import pika_utils
 from app.utils.redis_utils import job_redis, task_redis
@@ -47,6 +48,15 @@ pika_utils.register_consumer(
     routing_key=settings.minio_put_event_queue_routing_key,
     on_message_callback=on_message_minio_put_event,
     auto_delete=False
+)
+
+pika_utils.register_consumer(
+    queue_name=settings.add_tasks_to_job_queue,
+    exchange=settings.service_exchange,
+    routing_key=settings.add_tasks_to_job_queue_routing_key,
+    on_message_callback=on_message_add_tasks_to_job,
+    auto_delete=False,
+    priority=10
 )
 
 # Register consumer for task route response

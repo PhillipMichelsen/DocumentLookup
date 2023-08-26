@@ -37,7 +37,7 @@ def parse_grobid_output(grobid_output):
     paragraphs = parsed.findall('.//tei:p', namespaces={'tei': 'http://www.tei-c.org/ns/1.0'})
     paragraphs = [' '.join(p.itertext()) for p in paragraphs]
 
-    divs = parsed.findall('.//tei:div', namespaces={'tei': 'http://www.tei-c.org/ns/1.0'})
-    divs = [' '.join(div.itertext()) for div in divs]
+    # divs = parsed.findall('.//tei:div', namespaces={'tei': 'http://www.tei-c.org/ns/1.0'})
+    # divs = [' '.join(div.itertext()) for div in divs]
 
-    return divs, paragraphs
+    return paragraphs

@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     task_clear_data_response_queue: str = "task_clear_data_response_queue"
     task_clear_data_response_queue_routing_key: str = "task_clear_data_response"
 
+    add_tasks_to_job_queue: str = "add_tasks_to_job_queue"
+    add_tasks_to_job_queue_routing_key: str = "add_tasks_to_job"
+
     # Non-Service Queue Names + Routing Keys
     route_request_queue: str = "route_request_queue"
     route_request_queue_routing_key: str = "route_request"

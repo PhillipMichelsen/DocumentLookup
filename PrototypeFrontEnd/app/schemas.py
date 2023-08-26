@@ -11,7 +11,7 @@ class GeneratePresignedURLUploadResponse(BaseModel):
 
 
 class AnswerQuestionRequest(BaseModel):
-    query: str
+    user_query: str
     top_n: int
     text_type: str
     document_id: str

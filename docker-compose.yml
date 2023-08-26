@@ -22,6 +22,8 @@ services:
   file-service-core:
     build: ./File-Service
     #container_name: file-core-service
+    deploy:
+        replicas: 2
     depends_on:
       - rabbitmq
       - grobid

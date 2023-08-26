@@ -12,10 +12,10 @@ def handle_retrieve_context(decoded_message_body):
     retrieve_context_request = RetrieveContextRequest.model_validate(job_data)
 
     closest_entries = weaviate_utils.retrieve_closest_entries(
-        retrieve_context_request.query,
+        retrieve_context_request.context_query,
         retrieve_context_request.top_n,
         retrieve_context_request.text_type,
-        retrieve_context_request.document_id
+        retrieve_context_request.document_ids
     )
 
     closest_entries = [entry['text'] for entry in closest_entries['data']['Get']['Text']]

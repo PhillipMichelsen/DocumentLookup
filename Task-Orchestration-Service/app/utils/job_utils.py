@@ -59,12 +59,27 @@ class JobUtils:
             task_chain=','.join(task_chain_ids),
             current_task_index=0,
             job_data=job_data,
+            current_response='',
             status='CREATED'
         )
 
         job_redis.store_job(job)
 
         return job
+
+    @staticmethod
+    def insert_task_into_task_chain(job: JobSchema, task_id: str, index: int) -> None:
+        """Inserts a task into a job's task chain
+
+        :param job: Job
+        :param task_id: ID of task to insert
+        :param index: Index to insert task at
+        :return: None
+        """
+        task_chain = job.task_chain.split(',')
+        task_chain.insert(index, task_id)
+        job.task_chain = ','.join(task_chain)
+        job_redis.store_job(job)
 
     @staticmethod
     def delete_job(job: JobSchema) -> None:

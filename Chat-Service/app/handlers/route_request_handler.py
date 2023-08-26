@@ -18,6 +18,7 @@ def handle_route_request(decoded_message_body):
 
     task_route_response = TaskRouteResponse(
         task_id=task_route_request.task_id,
+        next_task_id=task_route_request.next_task_id,
         service_id=pika_utils.service_id,
         status='COMPLETED'
     )

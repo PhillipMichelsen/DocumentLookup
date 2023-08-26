@@ -35,9 +35,8 @@ class Settings(BaseSettings):
     # Non-Service Queue Names + Routing Keys
     task_orchestrator_task_response_routing_key: str = "task_response"
     task_orchestrator_task_route_response_routing_key: str = "task_route_response"
-
-    task_orchestrator_job_request_queue: str = "job_request_queue"
-    task_orchestrator_job_request_routing_key: str = "job_request"
+    task_orchestrator_job_request_queue_routing_key: str = "job_request"
+    task_orchestrator_add_tasks_to_job_routing_key: str = "add_tasks_to_job"
 
     # .env file config
     model_config = SettingsConfigDict(env_file='app/.env', env_file_encoding='utf-8')

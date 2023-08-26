@@ -47,7 +47,7 @@ class PostgresUtils:
                 original_file_name=file_record.original_file_name,
                 user_id=file_record.user_id,
                 total_entries=file_record.total_entries,
-                entries_processed=file_record.entries_processed,
+                weaviate_uuids=file_record.weaviate_uuids
             )
 
     def get_all_document_ids(self) -> List[str]:
